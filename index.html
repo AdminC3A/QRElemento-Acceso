@@ -4,54 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Validator</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-    <h1>Escáner QR</h1>
-    <div id="qr-reader" style="width:500px; margin: auto;"></div>
-    <div id="qr-reader-results"></div>
-<!-- Contenedor para mostrar el resultado -->
-<div id="result-container" class="hidden">
-    <div id="result-message">
-        <p id="result-text"></p>
-        <button id="continue-btn">Continuar Escaneando</button>
+    <h1>Validador de Códigos QR</h1>
+    
+    <!-- Contenedor del lector QR -->
+    <div id="reader-container"></div>
+
+    <!-- Contenedor del resultado -->
+    <div id="result" class="hidden">
+        <img id="status-image" src="" alt="Resultado">
+        <p id="status-message"></p>
+        <button id="retry-button">Reintentar</button>
     </div>
-</div>
-    <script>
-        // Configuración del escáner QR
-        var resultContainer = document.getElementById('qr-reader-results');
-        var lastResult, countResults = 0;
 
-        function onScanSuccess(decodedText, decodedResult) {
-            if (decodedText !== lastResult) {
-                ++countResults;
-                lastResult = decodedText;
-
-                // Manejo del resultado escaneado
-                resultContainer.innerHTML = `
-                    <p>Resultado escaneado: ${decodedText}</p>
-                `;
-
-                // Aquí conectaremos con Google Sheets para validar y registrar
-                validateAndLogQRCode(decodedText);
-            }
-        }
-
-        var html5QrcodeScanner = new Html5QrcodeScanner(
-            "qr-reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess);
-
-        // Función para validar y registrar el código QR
-        async function validateAndLogQRCode(qrCode) {
-            try {
-                // Lógica para validar y registrar
-                console.log(`Validando QR: ${qrCode}`);
-                // Aquí integraremos la conexión con Google Sheets
-            } catch (error) {
-                console.error("Error al validar o registrar el QR:", error);
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
+
 
