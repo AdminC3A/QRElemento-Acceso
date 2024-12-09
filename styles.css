@@ -45,3 +45,14 @@ h1 {
 #retry-button:hover {
     background-color: #0056b3;
 }
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    #reader-container {
+        width: 90%; /* Reduce el tamaño para pantallas pequeñas */
+        margin: 20px auto;
+    }
+
+    #result img {
+        width: 80px; /* Ajusta el tamaño de las imágenes de resultado */
+    }
+}
