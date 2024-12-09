@@ -35,19 +35,17 @@ const onScanSuccess = (decodedText) => {
             resultContainer.classList.remove('hidden'); // Muestra el contenedor de resultado
 
             if (data.status === "success") {
-                // Acceso permitido
-                statusImage.src = 'https://via.placeholder.com/100/00FF00/FFFFFF?text=✔';
+                statusImage.src = './images/permitido.png'; // Ruta local para la imagen de éxito
                 statusMessage.innerText = "Acceso permitido";
             } else {
-                // Acceso denegado
-                statusImage.src = 'https://via.placeholder.com/100/FF0000/FFFFFF?text=✘';
+                statusImage.src = './images/denegado.png'; // Ruta local para la imagen de error
                 statusMessage.innerText = "Acceso denegado";
             }
         })
         .catch(error => {
             // Error al contactar la API
             console.error("Error al contactar la API:", error);
-            statusImage.src = 'https://via.placeholder.com/100/FF0000/FFFFFF?text=✘';
+            statusImage.src = './images/denegado.png'; // Imagen de error general
             statusMessage.innerText = "Error en el sistema";
         });
 };
