@@ -70,6 +70,11 @@ const startScanning = () => {
         onScanError // Callback para errores
     ).catch(err => {
         console.error("No se pudo iniciar el lector:", err);
+
+        // Mostrar mensaje de error en la interfaz
+        const errorMessage = document.createElement('p');
+        errorMessage.innerText = "Error: No se pudo acceder a la cámara. Asegúrate de que el navegador tiene los permisos necesarios.";
+        readerContainer.appendChild(errorMessage);
     });
 };
 
