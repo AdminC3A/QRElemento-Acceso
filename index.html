@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validación de QR</title>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <title>Lector de QR con Validación</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Validación de QR</h1>
-    </header>
-    <main>
+    <h1>Escanea tu código QR</h1>
+    <div id="reader-container">
         <div id="reader"></div>
-        <div id="result">Por favor, escanea un código QR...</div>
-    </main>
-    <footer>
-        <p>© 2024 Validación de QR</p>
-    </footer>
+    </div>
+    <div id="result" class="hidden">
+        <img id="status-image" src="" alt="Estado">
+        <p id="status-message"></p>
+        <button id="retry-button">Reintentar</button>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
