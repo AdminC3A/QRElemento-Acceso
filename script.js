@@ -6,7 +6,7 @@ const statusMessage = document.getElementById('status-message');
 const retryButton = document.getElementById('retry-button');
 
 // URL de tu Google Apps Script (API para Google Sheets)
-const googleScriptURL = "TU_URL_DEL_SCRIPT"; // Reemplaza con tu URL del Apps Script
+const googleScriptURL = "https://script.google.com/macros/s/AKfycbya3JTzPfw2ZP7ocOeDSlcHMGldMvr2JG-rOCah7ck-bixZieqBcUwmDojimv30pXYn/exec";
 
 // Lógica para reiniciar el escaneo
 const restartScanning = () => {
