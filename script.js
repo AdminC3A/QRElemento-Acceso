@@ -5,7 +5,7 @@ const statusMessage = document.getElementById('status-message');
 const retryButton = document.getElementById('retry-button');
 
 // URL de tu Google Apps Script (API para Google Sheets)
-const googleScriptURL = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbxNnCpmoc-nra-jL1xkEoIZFiyNfr7vW1-EQ_K9IZHYTqBADN11Zx5vgq0ReBBLeHUz/exec";
+const googleScriptURL = "TU_URL_DEL_SCRIPT"; // Reemplaza con tu URL del Apps Script
 
 // Lógica para reiniciar el escaneo
 const restartScanning = () => {
@@ -18,18 +18,31 @@ const restartScanning = () => {
 retryButton.addEventListener('click', restartScanning);
 
 // Callback cuando se escanea correctamente
-const onScanSuccess = (decodedText, decodedResult) => {
-    readerContainer.style.display = 'none';
-    resultContainer.classList.remove('hidden');
+const onScanSuccess = (decodedText) => {
+    fetch(googleScriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ qrCode: decodedText })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Mostrar resultados según la validación
+        readerContainer.style.display = 'none';
+        resultContainer.classList.remove('hidden');
 
-    if (decodedText) {
-        statusImage.src = 'https://via.placeholder.com/100/00FF00/FFFFFF?text=✔'; // Palomita verde
-        statusMessage.innerText = `Código leído: ${decodedText}`;
-        sendToGoogleSheets(decodedText); // Enviar a Google Sheets
-    } else {
-        statusImage.src = 'https://via.placeholder.com/100/FF0000/FFFFFF?text=✘'; // X roja
-        statusMessage.innerText = `Código no válido`;
-    }
+        if (data.status === "success") {
+            statusImage.src = 'https://via.placeholder.com/100/00FF00/FFFFFF?text=✔';
+            statusMessage.innerText = "Acceso permitido";
+        } else {
+            statusImage.src = 'https://via.placeholder.com/100/FF0000/FFFFFF?text=✘';
+            statusMessage.innerText = "Acceso denegado";
+        }
+    })
+    .catch(error => {
+        console.error("Error al contactar la API:", error);
+        statusImage.src = 'https://via.placeholder.com/100/FF0000/FFFFFF?text=✘';
+        statusMessage.innerText = "Error en el sistema";
+    });
 };
 
 // Callback para errores
@@ -51,28 +64,6 @@ const startScanning = () => {
         onScanError
     ).catch(err => {
         console.error("No se pudo iniciar el lector:", err);
-    });
-};
-
-// Enviar datos a Google Sheets
-const sendToGoogleSheets = (qrCode) => {
-    const data = { qrCode }; // Datos que enviaremos
-    fetch(googleScriptURL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (response.ok) {
-            console.log("Datos enviados a Google Sheets");
-        } else {
-            console.error("Error al enviar datos a Google Sheets");
-        }
-    })
-    .catch(error => {
-        console.error("Error en la solicitud: ", error);
     });
 };
 
