@@ -54,6 +54,15 @@ const onScanSuccess = (decodedText) => {
 const onScanError = (errorMessage) => {
     console.error(`Error al escanear: ${errorMessage}`);
 };
+navigator.mediaDevices.getUserMedia({ video: true })
+    .then(() => {
+        console.log("Permiso de cámara otorgado");
+        startScanning(); // Inicia el lector si se otorgan permisos
+    })
+    .catch(err => {
+        console.error("Permiso de cámara denegado:", err);
+        alert("Necesitas otorgar permisos de cámara para usar esta aplicación.");
+    });
 
 // Inicializa el lector de QR
 const html5QrCode = new Html5Qrcode("reader");
