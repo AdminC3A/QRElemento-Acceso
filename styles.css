@@ -1,3 +1,4 @@
+/* General styling */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -11,6 +12,7 @@ h1 {
     margin-top: 20px;
 }
 
+/* Contenedor del lector QR */
 #reader-container {
     margin: 20px auto;
     width: 300px;
@@ -19,15 +21,18 @@ h1 {
     overflow: hidden;
 }
 
+/* Contenedor oculto para el resultado */
 .hidden {
     display: none;
 }
 
+/* Estilo para las imágenes de estado */
 #result img {
     width: 100px;
     margin: 20px auto;
 }
 
+/* Botón para reiniciar */
 #retry-button {
     padding: 10px 20px;
     background-color: #007bff;
@@ -40,6 +45,7 @@ h1 {
 #retry-button:hover {
     background-color: #0056b3;
 }
+
 /* Contenedor para el resultado */
 #result-container {
     position: fixed;
@@ -61,11 +67,11 @@ h1 {
 }
 
 #result-container .success {
-    color: #4CAF50; /* Verde */
+    color: #4CAF50; /* Verde para éxito */
 }
 
 #result-container .error {
-    color: #F44336; /* Rojo */
+    color: #F44336; /* Rojo para error */
 }
 
 #continue-btn {
