@@ -10,7 +10,13 @@
     <h1>Escáner QR</h1>
     <div id="qr-reader" style="width:500px; margin: auto;"></div>
     <div id="qr-reader-results"></div>
-
+<!-- Contenedor para mostrar el resultado -->
+<div id="result-container" class="hidden">
+    <div id="result-message">
+        <p id="result-text"></p>
+        <button id="continue-btn">Continuar Escaneando</button>
+    </div>
+</div>
     <script>
         // Configuración del escáner QR
         var resultContainer = document.getElementById('qr-reader-results');
