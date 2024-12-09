@@ -5,7 +5,7 @@ const statusMessage = document.getElementById('status-message');
 const retryButton = document.getElementById('retry-button');
 
 // URL de tu Google Apps Script (API para Google Sheets)
-const googleScriptURL = "TU_URL_DEL_SCRIPT"; // Reemplázala con la URL del despliegue
+const googleScriptURL = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbxNnCpmoc-nra-jL1xkEoIZFiyNfr7vW1-EQ_K9IZHYTqBADN11Zx5vgq0ReBBLeHUz/exec";
 
 // Lógica para reiniciar el escaneo
 const restartScanning = () => {
