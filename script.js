@@ -1,49 +1,80 @@
-// URL de la API de Google Apps Script
-const apiUrl = "https://script.google.com/macros/s/AKfycb.../exec"; // Reemplaza con la URL de tu API
+const readerContainer = document.getElementById('reader-container');
+const resultContainer = document.getElementById('result');
+const statusImage = document.getElementById('status-image');
+const statusMessage = document.getElementById('status-message');
+const retryButton = document.getElementById('retry-button');
 
-// Función para manejar el resultado exitoso del escaneo
-async function onScanSuccess(decodedText) {
-    // Mostrar el código escaneado mientras se verifica
-    document.getElementById("result").innerText = `Código escaneado: ${decodedText}. Verificando...`;
+// URL de tu Google Apps Script (API para Google Sheets)
+const googleScriptURL = "TU_URL_DEL_SCRIPT"; // Reemplázala con la URL del despliegue
 
-    try {
-        // Llamar a la API con el código escaneado
-        const response = await fetch(`${apiUrl}?code=${decodedText}`);
-        const data = await response.json();
+// Lógica para reiniciar el escaneo
+const restartScanning = () => {
+    resultContainer.classList.add('hidden');
+    readerContainer.style.display = 'block';
+    startScanning();
+};
 
-        // Mostrar el resultado
-        if (data.isValid) {
-            document.getElementById("result").innerHTML = `
-                <p style="color: green; font-weight: bold;">Código válido</p>
-                <button onclick="startScanner()" style="background-color: green; color: white;">Escanear otro</button>
-            `;
-        } else {
-            document.getElementById("result").innerHTML = `
-                <p style="color: red; font-weight: bold;">Código no válido</p>
-                <button onclick="startScanner()" style="background-color: red; color: white;">Intentar de nuevo</button>
-            `;
-        }
-    } catch (error) {
-        console.error("Error al conectar con la API:", error);
-        document.getElementById("result").innerHTML = `
-            <p style="color: red;">Error al conectar con la base de datos</p>
-        `;
+// Configura el botón de reintento
+retryButton.addEventListener('click', restartScanning);
+
+// Callback cuando se escanea correctamente
+const onScanSuccess = (decodedText, decodedResult) => {
+    readerContainer.style.display = 'none';
+    resultContainer.classList.remove('hidden');
+
+    if (decodedText) {
+        statusImage.src = 'https://via.placeholder.com/100/00FF00/FFFFFF?text=✔'; // Palomita verde
+        statusMessage.innerText = `Código leído: ${decodedText}`;
+        sendToGoogleSheets(decodedText); // Enviar a Google Sheets
+    } else {
+        statusImage.src = 'https://via.placeholder.com/100/FF0000/FFFFFF?text=✘'; // X roja
+        statusMessage.innerText = `Código no válido`;
     }
-}
+};
 
-// Manejar errores durante el escaneo
-function onScanError(errorMessage) {
-    console.error("Error durante el escaneo:", errorMessage);
-}
+// Callback para errores
+const onScanError = (errorMessage) => {
+    console.error(`Error al escanear: ${errorMessage}`);
+};
 
-// Inicializar el escáner QR
-function startScanner() {
-    const html5QrCodeScanner = new Html5QrcodeScanner(
-        "reader", { fps: 10, qrbox: 250 }
-    );
+// Inicializa el lector de QR
+const html5QrCode = new Html5Qrcode("reader");
 
-    html5QrCodeScanner.render(onScanSuccess, onScanError);
-}
+const startScanning = () => {
+    html5QrCode.start(
+        { facingMode: "environment" }, // Usa la cámara trasera
+        {
+            fps: 10,
+            qrbox: { width: 250, height: 250 } // Tamaño del cuadro de escaneo
+        },
+        onScanSuccess,
+        onScanError
+    ).catch(err => {
+        console.error("No se pudo iniciar el lector:", err);
+    });
+};
 
-// Iniciar el escáner al cargar la página
-startScanner();
+// Enviar datos a Google Sheets
+const sendToGoogleSheets = (qrCode) => {
+    const data = { qrCode }; // Datos que enviaremos
+    fetch(googleScriptURL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Datos enviados a Google Sheets");
+        } else {
+            console.error("Error al enviar datos a Google Sheets");
+        }
+    })
+    .catch(error => {
+        console.error("Error en la solicitud: ", error);
+    });
+};
+
+// Inicia el proceso al cargar la página
+startScanning();
