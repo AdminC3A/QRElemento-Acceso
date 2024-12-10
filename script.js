@@ -1,38 +1,20 @@
 // Variable global para almacenar la última cámara seleccionada
-let lastCameraId = null; // Almacena el ID de la última cámara seleccionada
+let lastCameraId = null;
 
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
-  // Mostrar el código escaneado en el elemento 'result'
+  // Mostrar el código escaneado
   document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
 
-  // Detener el escaneo y liberar la cámara
-  html5QrcodeScanner.clear().then(() => {
-    console.log("Escaneo detenido.");
-    // Habilitar el botón de reinicio
-    document.getElementById("retry").style.display = "block";
-  }).catch((error) => {
-    console.error("Error al detener el escaneo:", error);
-  });
+  // Procesar el código escaneado
+  console.log("Código procesado:", decodedText);
+
+  // No detenemos el escáner para que continúe
 }
 
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
   console.error("Error durante el escaneo: ", errorMessage);
-}
-// volver a camara trasera
-function getBackCameraId() {
-  return Html5Qrcode.getCameras().then((cameras) => {
-    if (cameras && cameras.length > 0) {
-      // Buscar la cámara trasera
-      const backCamera = cameras.find((camera) =>
-        camera.label.toLowerCase().includes("back")
-      );
-      return backCamera ? backCamera.id : cameras[0].id; // Usar la trasera si está disponible
-    } else {
-      throw new Error("No se encontraron cámaras disponibles.");
-    }
-  });
 }
 
 // Función para iniciar el escaneo con una cámara específica
@@ -66,16 +48,41 @@ function restartScanner() {
   if (lastCameraId) {
     startScanner(lastCameraId);
   } else {
-    // Si no hay una cámara seleccionada, renderizar el escáner desde el inicio
-    html5QrcodeScanner.render(onScanSuccess, onScanError);
+    // Si no hay una cámara seleccionada, buscar la cámara trasera automáticamente
+    getBackCameraId()
+      .then((cameraId) => {
+        startScanner(cameraId);
+      })
+      .catch((error) => {
+        console.error("Error al obtener la cámara trasera:", error);
+        document.getElementById("result").innerText =
+          "Error al acceder a la cámara. Verifica los permisos.";
+      });
   }
 }
 
-// Inicializar el escáner QR
-const html5QrcodeScanner = new Html5QrcodeScanner(
-  "reader", // ID del contenedor del lector QR
-  { fps: 10, qrbox: 250 } // Configuración del lector QR
-);
+// Función para obtener la cámara trasera automáticamente
+function getBackCameraId() {
+  return Html5Qrcode.getCameras().then((cameras) => {
+    if (cameras && cameras.length > 0) {
+      // Buscar la cámara trasera
+      const backCamera = cameras.find((camera) =>
+        camera.label.toLowerCase().includes("back")
+      );
+      return backCamera ? backCamera.id : cameras[0].id; // Usar la trasera si está disponible
+    } else {
+      throw new Error("No se encontraron cámaras disponibles.");
+    }
+  });
+}
 
-// Renderizar el escáner
-html5QrcodeScanner.render(onScanSuccess, onScanError);
+// Inicializar el escáner QR con la cámara trasera automáticamente
+getBackCameraId()
+  .then((cameraId) => {
+    startScanner(cameraId); // Usar cámara trasera automáticamente
+  })
+  .catch((error) => {
+    console.error("Error al obtener la cámara trasera:", error);
+    document.getElementById("result").innerText =
+      "Error al acceder a la cámara. Verifica los permisos.";
+  });
