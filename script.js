@@ -20,6 +20,20 @@ function onScanSuccess(decodedText, decodedResult) {
 function onScanError(errorMessage) {
   console.error("Error durante el escaneo: ", errorMessage);
 }
+// volver a camara trasera
+function getBackCameraId() {
+  return Html5Qrcode.getCameras().then((cameras) => {
+    if (cameras && cameras.length > 0) {
+      // Buscar la cámara trasera
+      const backCamera = cameras.find((camera) =>
+        camera.label.toLowerCase().includes("back")
+      );
+      return backCamera ? backCamera.id : cameras[0].id; // Usar la trasera si está disponible
+    } else {
+      throw new Error("No se encontraron cámaras disponibles.");
+    }
+  });
+}
 
 // Función para iniciar el escaneo con una cámara específica
 function startScanner(cameraId) {
