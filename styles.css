@@ -44,12 +44,11 @@ main {
 }
 
 #result {
-    margin-top: 20px;
-    font-size: 16px;
-    text-align: center;
-    color: #555555;
+   font-size: 2rem; /* Duplicar el tamaño del texto */
+  font-weight: bold; /* Resaltar el texto */
+  text-align: center; /* Centrar el texto */
+  margin-top: 1rem; /* Separación con respecto al lector QR */
 }
-
 footer p {
     margin: 0;
     font-size: 14px;
