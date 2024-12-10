@@ -36,19 +36,38 @@ main {
     width: 100%;
 }
 
-#reader {
-    width: 300px;
-    height: 300px;
-    border: 2px solid #333333;
-    margin-top: 20px;
+/* Contenedor principal del lector QR con la superposición */
+#reader-container {
+  position: relative; /* Permitir que los elementos hijos se posicionen encima */
+  width: 50%; /* Ajusta el tamaño deseado */
+  margin: 0 auto; /* Centrar el contenedor */
 }
 
-#result {
-   font-size: 2rem; /* Duplicar el tamaño del texto */
-  font-weight: bold; /* Resaltar el texto */
-  text-align: center; /* Centrar el texto */
-  margin-top: 1rem; /* Separación con respecto al lector QR */
+/* Lector QR */
+#reader {
+  width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
 }
+
+/* Imagen de validación superpuesta */
+#validation-image {
+  display: none; /* Ocultar por defecto */
+  position: absolute; /* Superponer sobre el lector QR */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Escalar la imagen para cubrir todo el lector */
+  z-index: 10; /* Asegura que esté encima del lector QR */
+}
+
+/* Estilo para el texto del resultado */
+#result {
+  font-size: 1.5rem; /* Ajusta el tamaño del texto del resultado */
+  font-weight: bold; /* Resalta el texto */
+  text-align: center; /* Centra el texto */
+  margin-top: 1rem; /* Espaciado respecto al lector QR */
+}
+
 footer p {
     margin: 0;
     font-size: 14px;
