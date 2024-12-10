@@ -1,4 +1,4 @@
-const csvUrl = "https://github.com/AdminC3A/QRElemento/blob/main/data/base_de_datos.csv"; // Cambia esta URL según tu repositorio
+const csvUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento/main/data/base_de_datos.csv"; // URL actualizada
 let database = [];
 
 // Cargar la base de datos CSV
