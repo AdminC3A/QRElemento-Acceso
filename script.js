@@ -119,3 +119,4 @@ function restartScanner() {
 
 // Ejecutar al cargar la página
 window.onload = initializeScanner;
+
