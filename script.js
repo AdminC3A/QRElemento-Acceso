@@ -1,18 +1,54 @@
+import { Html5QrcodeScanner } from "https://unpkg.com/html5-qrcode?module";
+
+let html5QrcodeScanner; // Declaramos esta variable global para reutilizar la configuración
+
+// Función que maneja la validación del código QR
+function validateAccess(qrCode) {
+  const apiUrl = "https://tu-api.com/validar"; // Cambia a tu URL de validación
+  fetch(`${apiUrl}?qrCode=${encodeURIComponent(qrCode)}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const resultElement = document.getElementById("result");
+      const statusImage = document.getElementById("status-image");
+
+      if (data.isValid) {
+        resultElement.innerText = "Acceso permitido ✅";
+        resultElement.style.color = "green";
+        statusImage.src = "./images/permitido.png"; // Imagen verde
+      } else {
+        resultElement.innerText = "Acceso denegado ❌";
+        resultElement.style.color = "red";
+        statusImage.src = "./images/denegado.png"; // Imagen roja
+      }
+
+      statusImage.style.display = "block"; // Mostrar la imagen
+      document.getElementById("retry").style.display = "block"; // Mostrar botón de reinicio
+    })
+    .catch((error) => {
+      console.error("Error al validar el QR:", error);
+      document.getElementById("result").innerText = "Error de conexión.";
+      document.getElementById("result").style.color = "orange";
+    });
+}
+
+// Función para reiniciar el escaneo sin volver a solicitar permisos
+function restartScanner() {
+  document.getElementById("result").innerText = "Por favor, escanea un código QR...";
+  document.getElementById("retry").style.display = "none";
+  document.getElementById("status-image").style.display = "none";
+
+  // Reiniciar el escaneo sin destruir el lector
+  html5QrcodeScanner.resume();
+}
+
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
-  // Mostrar el texto escaneado
+  console.log(`Código escaneado: ${decodedText}`);
   document.getElementById("result").innerText = `Código escaneado: ${decodedText}`;
 
   // Detener el escaneo
-  html5QrcodeScanner.clear().then(() => {
-    console.log("Escaneo detenido.");
-    document.getElementById("retry").style.display = "block"; // Mostrar botón de reinicio
-  }).catch((error) => {
-    console.error("Error al detener el escaneo:", error);
-  });
-
-  // Validar el código QR (puedes implementar esta función)
-  validateAccess(decodedText);
+  html5QrcodeScanner.pause(); // Detenemos el escaneo para procesar
+  validateAccess(decodedText); // Validar el QR escaneado
 }
 
 // Manejar errores durante el escaneo
@@ -20,20 +56,20 @@ function onScanError(errorMessage) {
   console.error("Error durante el escaneo: ", errorMessage);
 }
 
-// Función para reiniciar el escaneo
-function restartScanner() {
-  document.getElementById("result").innerText = "Por favor, escanea un código QR...";
-  document.getElementById("retry").style.display = "none"; // Ocultar botón de reinicio
+// Inicializar el lector QR
+function initializeScanner() {
+  html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader",
+    {
+      fps: 10,
+      qrbox: 250,
+      rememberLastUsedCamera: true, // Recordar la cámara utilizada
+      facingMode: { exact: "environment" }, // Configurar cámara trasera
+    }
+  );
 
-  // Reiniciar el escáner
   html5QrcodeScanner.render(onScanSuccess, onScanError);
 }
 
-// Inicializar el escáner QR
-const html5QrcodeScanner = new Html5QrcodeScanner(
-  "reader",
-  { fps: 10, qrbox: 250 } // Configuración del área de escaneo
-);
-
-// Renderizar el escáner
-html5QrcodeScanner.render(onScanSuccess, onScanError);
+// Iniciar el lector QR al cargar la página
+initializeScanner();
