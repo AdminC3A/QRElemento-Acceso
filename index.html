@@ -1,47 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Html5-Qrcode Demo</title>
-    <script src="https://unpkg.com/html5-qrcode"></script> <!-- Incluye la biblioteca desde CDN -->
+    <title>Elemento Arquitectura Interior</title>
+    <script src="https://unpkg.com/html5-qrcode"></script> <!-- Biblioteca HTML5 QR -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #qr-reader {
+            width: 300px;
+            margin: auto;
+        }
+        #validation-image {
+            width: 100px;
+            margin: 10px auto;
+            display: none;
+        }
+        #qr-reader-results {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>QR Code Scanner</h1>
-    <!-- Contenedor para el lector -->
-    <div id="qr-reader" style="width:500px"></div>
-    <!-- Contenedor para mostrar los resultados -->
-    <div id="qr-reader-results"></div>
+    <h1>Elemento Arquitectura Interior</h1>
+    <div id="qr-reader"></div>
+    <img id="validation-image" alt="Resultado de validación">
+    <div id="qr-reader-results">Por favor, escanea un código QR...</div>
+    <button id="retry" style="display: none;" onclick="restartScanner()">Reintentar</button>
+
     <script>
-        // Función que asegura que el DOM esté cargado
-        function docReady(fn) {
-            if (document.readyState === "complete" || document.readyState === "interactive") {
-                setTimeout(fn, 1);
+        let lastCameraId = null; // Para recordar la cámara seleccionada
+
+        function onScanSuccess(decodedText, decodedResult) {
+            const resultElement = document.getElementById("qr-reader-results");
+            const validationImage = document.getElementById("validation-image");
+
+            // Mostrar el código escaneado
+            resultElement.innerText = `Código detectado: ${decodedText}`;
+            console.log(`Resultado: ${decodedText}`, decodedResult);
+
+            // Simular validación (puedes reemplazar con API más adelante)
+            if (decodedText === "VALID_CODE") {
+                validationImage.src = "images/Permitido.png"; // Imagen verde
+                validationImage.style.display = "block";
+                resultElement.innerText = "Acceso Permitido.";
             } else {
-                document.addEventListener("DOMContentLoaded", fn);
+                validationImage.src = "images/Denegado.png"; // Imagen roja
+                validationImage.style.display = "block";
+                resultElement.innerText = "Acceso Denegado.";
+            }
+
+            // Ocultar imagen después de 5 segundos
+            setTimeout(() => {
+                validationImage.style.display = "none";
+            }, 5000);
+        }
+
+        function onScanError(errorMessage) {
+            console.error("Error durante el escaneo: ", errorMessage);
+        }
+
+        function startScanner(cameraId) {
+            const html5Qrcode = new Html5Qrcode("qr-reader");
+
+            html5Qrcode
+                .start(
+                    cameraId,
+                    { fps: 10, qrbox: 250 },
+                    onScanSuccess,
+                    onScanError
+                )
+                .then(() => {
+                    lastCameraId = cameraId; // Guardar la cámara usada
+                    document.getElementById("retry").style.display = "none";
+                })
+                .catch((error) => {
+                    console.error("Error al iniciar el escaneo:", error);
+                    document.getElementById("qr-reader-results").innerText =
+                        "Error al acceder a la cámara.";
+                });
+        }
+
+        function restartScanner() {
+            document.getElementById("qr-reader-results").innerText = "Por favor, escanea un código QR...";
+            document.getElementById("validation-image").style.display = "none";
+            document.getElementById("retry").style.display = "none";
+
+            if (lastCameraId) {
+                startScanner(lastCameraId); // Reiniciar con la cámara previamente seleccionada
+            } else {
+                getBackCameraId().then(startScanner).catch((error) => {
+                    console.error("Error al obtener la cámara trasera:", error);
+                    document.getElementById("qr-reader-results").innerText =
+                        "Error al acceder a la cámara.";
+                });
             }
         }
 
-        // Inicializa el lector QR cuando el DOM esté listo
-        docReady(function () {
-            var resultContainer = document.getElementById('qr-reader-results');
-            var lastResult, countResults = 0;
-
-            function onScanSuccess(decodedText, decodedResult) {
-                // Si es un nuevo código, lo procesamos
-                if (decodedText !== lastResult) {
-                    ++countResults;
-                    lastResult = decodedText;
-                    resultContainer.innerText = `Código escaneado: ${decodedText}`;
-                    console.log(`Resultado del escaneo: ${decodedText}`, decodedResult);
+        function getBackCameraId() {
+            return Html5Qrcode.getCameras().then((cameras) => {
+                if (cameras && cameras.length > 0) {
+                    const backCamera = cameras.find((camera) =>
+                        camera.label.toLowerCase().includes("back")
+                    );
+                    return backCamera ? backCamera.id : cameras[0].id; // Usar cámara trasera si está disponible
+                } else {
+                    throw new Error("No se encontraron cámaras disponibles.");
                 }
-            }
+            });
+        }
 
-            // Configuración del escáner
-            var html5QrcodeScanner = new Html5QrcodeScanner(
-                "qr-reader", // ID del contenedor para la cámara
-                { fps: 10, qrbox: 250 } // Opciones del lector
-            );
-            html5QrcodeScanner.render(onScanSuccess);
-        });
+        // Inicializar escaneo con la cámara trasera automáticamente
+        getBackCameraId()
+            .then(startScanner)
+            .catch((error) => {
+                console.error("Error al obtener la cámara trasera:", error);
+                document.getElementById("qr-reader-results").innerText =
+                    "Error al acceder a la cámara. Verifica los permisos.";
+            });
     </script>
 </body>
 </html>
