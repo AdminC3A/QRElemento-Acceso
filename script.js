@@ -22,6 +22,10 @@ function loadDatabase() {
                 const [CodigoQR] = row.split(",");
                 return CodigoQR.trim();
             }).filter(code => code); // Filtrar valores vacíos
+
+            // Mostrar mensaje de confirmación de carga exitosa
+            const resultElement = document.getElementById("result");
+            resultElement.innerText = "Base de datos cargada correctamente.";
             console.log("Base de datos cargada:", validCodes);
         })
         .catch(error => {
