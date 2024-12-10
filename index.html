@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acceso QR</title>
-  <link rel="stylesheet" href="styles.css"> <!-- Estilos opcionales -->
-  <script type="module" src="script.js" defer></script> <!-- Script principal -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elemento Arquitectura Interior</title>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Sistema de Validación de Accesos</h1>
-  </header>
-  <main>
-    <!-- Contenedor para el lector QR -->
-    <div id="reader" style="width: 300px; margin: auto;"></div>
-    
-    <!-- Mensajes -->
-    <div id="result">
-      <p id="message"></p>
-    </div>
-    
-    <!-- Botón para reiniciar escaneo -->
-    <button id="retry" style="display: none;">Reintentar</button>
-  </main>
+    <header>
+        <h1>Elemento Arquitectura Interior</h1>
+    </header>
+    <main>
+        <div id="reader"></div>
+        <p id="result">Por favor, escanea un código QR...</p>
+    </main>
+    <footer>
+        <p>Elemento Arquitectura Interior © 2024</p>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
