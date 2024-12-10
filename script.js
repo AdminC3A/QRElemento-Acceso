@@ -1,55 +1,34 @@
 // Variable global para almacenar la última cámara seleccionada
 let lastCameraId = null;
 
-const apiUrl = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbwrTwr8mIhDPHOS5APWE6C4cuvKlv0F0zXvhG-5km1b5Zw7MKfbjtLmC3eJvvpQsUbb/exec";
-
-// Inicializar el lector QR
-let html5Qrcode = new Html5Qrcode("reader");
+// Base de datos simulada de códigos permitidos
+const validCodes = ["A7DhWBBm", "67890", "abcde"]; // Ejemplo de códigos válidos
 
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
-  // Detener temporalmente el escaneo para procesar el resultado
-  html5Qrcode.pause().then(() => {
-    console.log("Escaneo pausado temporalmente.");
+  // Mostrar el código escaneado
+  document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
 
-    // Mostrar el código escaneado en pantalla
-    const resultElement = document.getElementById("result");
-    resultElement.innerText = `Código detectado: ${decodedText}`;
+  // Obtener el contenedor de la imagen de validación
+  const validationImage = document.getElementById("validation-image");
 
-    // Enviar el código QR a la API para validar
-    fetch(`${apiUrl}?qrCode=${encodeURIComponent(decodedText)}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const validationImage = document.getElementById("validation-image");
+  // Cotejar el código con la base de datos
+  if (validCodes.includes(decodedText)) {
+    // Código válido: mostrar imagen verde
+    validationImage.src = "images/Permitido.png"; // Ruta de la imagen verde
+    validationImage.style.display = "block"; // Mostrar la imagen
+  } else {
+    // Código inválido: mostrar imagen roja
+    validationImage.src = "images/Denegado.png"; // Ruta de la imagen roja
+    validationImage.style.display = "block"; // Mostrar la imagen
+  }
 
-        if (data.isValid) {
-          // Código válido: mostrar imagen verde
-          validationImage.src = "images/Permitido.png";
-          validationImage.style.display = "block"; // Mostrar imagen
-          resultElement.innerText = `Acceso Permitido\nNombre: ${data.associatedName}\nCompañía: ${data.associatedCompany}\nPuesto: ${data.associatedPosition}`;
-        } else {
-          // Código inválido: mostrar imagen roja
-          validationImage.src = "images/Denegado.png";
-          validationImage.style.display = "block"; // Mostrar imagen
-          resultElement.innerText = "Acceso Denegado. Código no válido.";
-        }
+  // Ocultar la imagen después de 5 segundos
+  setTimeout(() => {
+    validationImage.style.display = "none";
+  }, 5000);
 
-        // Ocultar la imagen después de 5 segundos y reanudar el escaneo
-        setTimeout(() => {
-          validationImage.style.display = "none";
-          html5Qrcode.resume().then(() => {
-            console.log("Escaneo reanudado.");
-          });
-        }, 5000);
-      })
-      .catch((error) => {
-        console.error("Error al conectar con la API:", error);
-        resultElement.innerText = "Error al validar el código QR.";
-        html5Qrcode.resume().then(() => {
-          console.log("Escaneo reanudado tras error.");
-        });
-      });
-  });
+  // No detenemos el escáner para que continúe escaneando
 }
 
 // Manejar errores durante el escaneo
@@ -59,6 +38,8 @@ function onScanError(errorMessage) {
 
 // Función para iniciar el escaneo con una cámara específica
 function startScanner(cameraId) {
+  const html5Qrcode = new Html5Qrcode("reader");
+
   html5Qrcode
     .start(
       cameraId,
@@ -75,6 +56,28 @@ function startScanner(cameraId) {
     .catch((error) => {
       console.error("Error al iniciar el escaneo: ", error);
     });
+}
+
+// Función para reiniciar el escáner QR
+function restartScanner() {
+  document.getElementById("result").innerText = "Por favor, escanea un código QR...";
+  document.getElementById("retry").style.display = "none"; // Ocultar el botón de reinicio
+
+  // Si ya se seleccionó una cámara previamente, usarla
+  if (lastCameraId) {
+    startScanner(lastCameraId);
+  } else {
+    // Si no hay una cámara seleccionada, buscar la cámara trasera automáticamente
+    getBackCameraId()
+      .then((cameraId) => {
+        startScanner(cameraId);
+      })
+      .catch((error) => {
+        console.error("Error al obtener la cámara trasera:", error);
+        document.getElementById("result").innerText =
+          "Error al acceder a la cámara. Verifica los permisos.";
+      });
+  }
 }
 
 // Función para obtener la cámara trasera automáticamente
