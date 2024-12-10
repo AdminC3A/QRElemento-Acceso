@@ -1,15 +1,34 @@
 // Variable global para almacenar la última cámara seleccionada
 let lastCameraId = null;
 
+// Base de datos simulada de códigos permitidos
+const validCodes = ["12345", "67890", "abcde"]; // Ejemplo de códigos válidos
+
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
   // Mostrar el código escaneado
   document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
 
-  // Procesar el código escaneado
-  console.log("Código procesado:", decodedText);
+  // Obtener el contenedor de la imagen de validación
+  const validationImage = document.getElementById("validation-image");
 
-  // No detenemos el escáner para que continúe
+  // Cotejar el código con la base de datos
+  if (validCodes.includes(decodedText)) {
+    // Código válido: mostrar imagen verde
+    validationImage.src = "images/Permitido.png"; // Ruta de la imagen verde
+    validationImage.style.display = "block"; // Mostrar la imagen
+  } else {
+    // Código inválido: mostrar imagen roja
+    validationImage.src = "images/Denegado.png"; // Ruta de la imagen roja
+    validationImage.style.display = "block"; // Mostrar la imagen
+  }
+
+  // Ocultar la imagen después de 2 segundos
+  setTimeout(() => {
+    validationImage.style.display = "none";
+  }, 2000);
+
+  // No detenemos el escáner para que continúe escaneando
 }
 
 // Manejar errores durante el escaneo
