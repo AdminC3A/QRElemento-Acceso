@@ -1,24 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elemento Arquitectura Interior</title>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <h1>Elemento Arquitectura Interior</h1>
-    </header>
-    <main>
-        <div id="reader"></div>
-        <p id="result">Por favor, escanea un código QR...</p>
-    </main>
-    <footer>
-        <p>Elemento Arquitectura Interior © 2024</p>
-    </footer>
+/* General styles */
+body {
+  margin: 0; /* no unit */
+  padding: 0; /* no unit */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    color: #333333;
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+.header {
+  padding: 10px;
+  background: black;
+  color: white;
+header, footer {
+    background-color: #333333;
+    color: #ffffff;
+    text-align: center;
+    width: 100%;
+    padding: 15px 0;
+}
+
+.section {
+  padding: auto;
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    max-width: 600px;
+    width: 100%;
+}
+#reader {
+    width: 300px;
+    height: 300px;
+    border: 2px solid #333333;
+    margin-top: 20px;
+}
+#result {
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #555555;
+}
+footer p {
+    margin: 0;
+    font-size: 14px;
+}
