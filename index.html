@@ -1,79 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elemento Arquitectura Interior</title>
-    <script src="https://unpkg.com/html5-qrcode"></script> <!-- Biblioteca HTML5 QR -->
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-        }
-        h1 {
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
             color: #333;
+            text-align: center;
         }
-        #qr-reader {
-            width: 300px;
-            margin: auto;
+
+        h1 {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #444;
         }
-        #validation-image {
-            width: 100px;
-            margin: 10px auto;
+
+        #reader-container {
+            margin: 20px auto;
+            width: 320px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #result {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        #status-image {
+            margin: 20px auto;
+            display: none;
+            width: 120px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             display: none;
         }
-        #qr-reader-results {
-            margin-top: 20px;
-            font-size: 16px;
+
+        button:hover {
+            background-color: #0056b3;
         }
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
         }
     </style>
 </head>
 <body>
     <h1>Elemento Arquitectura Interior</h1>
-    <div id="qr-reader"></div>
-    <img id="validation-image" alt="Resultado de validación">
-    <div id="qr-reader-results">Por favor, escanea un código QR...</div>
-    <button id="retry" style="display: none;" onclick="restartScanner()">Reintentar</button>
-
+    <div id="reader-container">
+        <div id="reader"></div>
+        <div id="result">Por favor, escanea un código QR...</div>
+        <img id="status-image" src="" alt="Estado">
+        <button id="retry" onclick="restartScanner()">Reintentar</button>
+    </div>
+    <footer>Elemento Arquitectura Interior © 2024</footer>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        let lastCameraId = null; // Para recordar la cámara seleccionada
+        let lastCameraId = null;
 
         function onScanSuccess(decodedText, decodedResult) {
-            const resultElement = document.getElementById("qr-reader-results");
-            const validationImage = document.getElementById("validation-image");
+            const resultElement = document.getElementById("result");
+            const statusImage = document.getElementById("status-image");
 
-            // Mostrar el código escaneado
             resultElement.innerText = `Código detectado: ${decodedText}`;
-            console.log(`Resultado: ${decodedText}`, decodedResult);
 
-            // Simular validación (puedes reemplazar con API más adelante)
+            // Simular validación (cambiar por API si es necesario)
             if (decodedText === "VALID_CODE") {
-                validationImage.src = "images/Permitido.png"; // Imagen verde
-                validationImage.style.display = "block";
+                statusImage.src = "images/Permitido.png";
+                statusImage.style.display = "block";
                 resultElement.innerText = "Acceso Permitido.";
             } else {
-                validationImage.src = "images/Denegado.png"; // Imagen roja
-                validationImage.style.display = "block";
+                statusImage.src = "images/Denegado.png";
+                statusImage.style.display = "block";
                 resultElement.innerText = "Acceso Denegado.";
             }
 
-            // Ocultar imagen después de 5 segundos
             setTimeout(() => {
-                validationImage.style.display = "none";
+                statusImage.style.display = "none";
             }, 5000);
         }
 
         function onScanError(errorMessage) {
-            console.error("Error durante el escaneo: ", errorMessage);
+            console.error("Error durante el escaneo:", errorMessage);
         }
 
         function startScanner(cameraId) {
-            const html5Qrcode = new Html5Qrcode("qr-reader");
+            const html5Qrcode = new Html5Qrcode("reader");
 
             html5Qrcode
                 .start(
@@ -83,27 +114,27 @@
                     onScanError
                 )
                 .then(() => {
-                    lastCameraId = cameraId; // Guardar la cámara usada
+                    lastCameraId = cameraId;
                     document.getElementById("retry").style.display = "none";
                 })
                 .catch((error) => {
                     console.error("Error al iniciar el escaneo:", error);
-                    document.getElementById("qr-reader-results").innerText =
+                    document.getElementById("result").innerText =
                         "Error al acceder a la cámara.";
                 });
         }
 
         function restartScanner() {
-            document.getElementById("qr-reader-results").innerText = "Por favor, escanea un código QR...";
-            document.getElementById("validation-image").style.display = "none";
+            document.getElementById("result").innerText = "Por favor, escanea un código QR...";
+            document.getElementById("status-image").style.display = "none";
             document.getElementById("retry").style.display = "none";
 
             if (lastCameraId) {
-                startScanner(lastCameraId); // Reiniciar con la cámara previamente seleccionada
+                startScanner(lastCameraId);
             } else {
                 getBackCameraId().then(startScanner).catch((error) => {
                     console.error("Error al obtener la cámara trasera:", error);
-                    document.getElementById("qr-reader-results").innerText =
+                    document.getElementById("result").innerText =
                         "Error al acceder a la cámara.";
                 });
             }
@@ -115,21 +146,22 @@
                     const backCamera = cameras.find((camera) =>
                         camera.label.toLowerCase().includes("back")
                     );
-                    return backCamera ? backCamera.id : cameras[0].id; // Usar cámara trasera si está disponible
+                    return backCamera ? backCamera.id : cameras[0].id;
                 } else {
                     throw new Error("No se encontraron cámaras disponibles.");
                 }
             });
         }
 
-        // Inicializar escaneo con la cámara trasera automáticamente
         getBackCameraId()
             .then(startScanner)
             .catch((error) => {
                 console.error("Error al obtener la cámara trasera:", error);
-                document.getElementById("qr-reader-results").innerText =
+                document.getElementById("result").innerText =
                     "Error al acceder a la cámara. Verifica los permisos.";
             });
     </script>
 </body>
+</html>
+
 </html>
