@@ -35,7 +35,7 @@ function startScanner(cameraId) {
     html5Qrcode
         .start(
             cameraId,
-            { fps: 10, qrbox: { width: 125, height: 125 } },
+            { fps: 15, qrbox: { width: 125, height: 125 } },
             onScanSuccess,
             onScanError
         )
