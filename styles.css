@@ -1,5 +1,3 @@
-
-/* General styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -36,36 +34,32 @@ main {
     width: 100%;
 }
 
-/* Contenedor principal del lector QR con la superposición */
 #reader-container {
-  position: relative; /* Permitir que los elementos hijos se posicionen encima */
-  width: 50%; /* Ajusta el tamaño deseado */
-  margin: 0 auto; /* Centrar el contenedor */
+    position: relative;
+    width: 50%;
+    margin: 0 auto;
 }
 
-/* Lector QR */
 #reader {
-  width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
+    width: 100%;
 }
 
-/* Imagen de validación superpuesta */
 #validation-image {
-  display: none; /* Ocultar por defecto */
-  position: absolute; /* Superponer sobre el lector QR */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Escalar la imagen para cubrir todo el lector */
-  z-index: 10; /* Asegura que esté encima del lector QR */
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 10;
 }
 
-/* Estilo para el texto del resultado */
 #result {
-  font-size: 1.5rem; /* Ajusta el tamaño del texto del resultado */
-  font-weight: bold; /* Resalta el texto */
-  text-align: center; /* Centra el texto */
-  margin-top: 1rem; /* Espaciado respecto al lector QR */
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1rem;
 }
 
 footer p {
