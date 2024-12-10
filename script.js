@@ -1,3 +1,6 @@
+// Variable global para almacenar la última cámara seleccionada
+let lastCameraId = null; // Almacena el ID de la última cámara seleccionada
+
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
   // Mostrar el código escaneado en el elemento 'result'
@@ -18,13 +21,40 @@ function onScanError(errorMessage) {
   console.error("Error durante el escaneo: ", errorMessage);
 }
 
+// Función para iniciar el escaneo con una cámara específica
+function startScanner(cameraId) {
+  const html5Qrcode = new Html5Qrcode("reader");
+
+  html5Qrcode
+    .start(
+      cameraId,
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+      },
+      onScanSuccess,
+      onScanError
+    )
+    .then(() => {
+      lastCameraId = cameraId; // Guardar el ID de la cámara seleccionada
+    })
+    .catch((error) => {
+      console.error("Error al iniciar el escaneo: ", error);
+    });
+}
+
 // Función para reiniciar el escáner QR
 function restartScanner() {
   document.getElementById("result").innerText = "Por favor, escanea un código QR...";
   document.getElementById("retry").style.display = "none"; // Ocultar el botón de reinicio
 
-  // Renderizar nuevamente el escáner QR
-  html5QrcodeScanner.render(onScanSuccess, onScanError);
+  // Si ya se seleccionó una cámara previamente, usarla
+  if (lastCameraId) {
+    startScanner(lastCameraId);
+  } else {
+    // Si no hay una cámara seleccionada, renderizar el escáner desde el inicio
+    html5QrcodeScanner.render(onScanSuccess, onScanError);
+  }
 }
 
 // Inicializar el escáner QR
