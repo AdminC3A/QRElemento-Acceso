@@ -1,46 +1,24 @@
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #f9f9f9;
-  color: #333;
-  margin: 0;
-  padding: 0;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elemento Arquitectura Interior</title>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Elemento Arquitectura Interior</h1>
+    </header>
+    <main>
+        <div id="reader"></div>
+        <p id="result">Por favor, escanea un código QR...</p>
+    </main>
+    <footer>
+        <p>Elemento Arquitectura Interior © 2024</p>
+    </footer>
 
-header {
-  background-color: #007bff;
-  color: white;
-  padding: 1rem;
-}
-
-main {
-  margin: 2rem auto;
-  max-width: 600px;
-}
-
-#reader {
-  border: 2px dashed #007bff;
-  padding: 20px;
-}
-
-#result {
-  margin-top: 20px;
-  font-size: 1.2rem;
-}
-
-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-    }
-}
+    <script src="script.js"></script>
+</body>
+</html>
