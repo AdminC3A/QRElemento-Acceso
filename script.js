@@ -25,30 +25,27 @@ async function loadDatabase() {
 }
 
 // Manejar el resultado exitoso del escaneo
-function onScanSuccess(decodedText) {
-    const resultElement = document.getElementById("result");
-    const statusImage = document.getElementById("status-image");
+function onScanSuccess(decodedText, decodedResult) {
+    const validationImage = document.getElementById("validation-image");
 
-    // Buscar en la base de datos
-    const match = database.find(entry => entry.CodigoQR === decodedText);
+    // Buscar el código en la base de datos
+    const entry = database.find(item => item.CodigoQR === decodedText);
 
-    if (match) {
-        // Código válido
-        statusImage.src = "images/Permitido.png";
-        statusImage.style.display = "block";
-        resultElement.innerText = `Acceso Permitido\nNombre: ${match.Nombre}\nCompañía: ${match.Compañia}\nPuesto: ${match.Puesto}`;
+    if (entry) {
+        validationImage.src = "images/Permitido.png";
+        validationImage.style.display = "block";
+        document.getElementById("result").innerText = `Acceso Permitido\nNombre: ${entry.Nombre}\nCompañía: ${entry.Compañia}\nPuesto: ${entry.Puesto}`;
     } else {
-        // Código inválido
-        statusImage.src = "images/Denegado.png";
-        statusImage.style.display = "block";
-        resultElement.innerText = "Acceso Denegado. Código no válido.";
+        validationImage.src = "images/Denegado.png";
+        validationImage.style.display = "block";
+        document.getElementById("result").innerText = "Acceso Denegado. Código no válido.";
     }
 
-    // Ocultar la imagen después de 5 segundos
     setTimeout(() => {
-        statusImage.style.display = "none";
+        validationImage.style.display = "none";
     }, 5000);
 }
+
 
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
@@ -78,3 +75,4 @@ loadDatabase()
         console.error("Error al cargar la base de datos:", error);
         document.getElementById("result").innerText = "Error al cargar la base de datos.";
     });
+loadDatabase();
