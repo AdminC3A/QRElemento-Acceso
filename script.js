@@ -1,35 +1,43 @@
 // Variable global para almacenar la última cámara seleccionada
 let lastCameraId = null;
 
-// Base de datos simulada de códigos permitidos
-const validCodes = ["A7DhWBBm", "67890", "abcde"]; // Ejemplo de códigos válidos
+const apiUrl = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbwrTwr8mIhDPHOS5APWE6C4cuvKlv0F0zXvhG-5km1b5Zw7MKfbjtLmC3eJvvpQsUbb/exec";
 
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
-  // Mostrar el código escaneado
+  // Mostrar el código escaneado en pantalla
   document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
 
-  // Obtener el contenedor de la imagen de validación
-  const validationImage = document.getElementById("validation-image");
+  // Enviar el código QR a la API para validar
+  fetch(`${apiUrl}?qrCode=${encodeURIComponent(decodedText)}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const validationImage = document.getElementById("validation-image");
 
-  // Cotejar el código con la base de datos
-  if (validCodes.includes(decodedText)) {
-    // Código válido: mostrar imagen verde
-    validationImage.src = "images/Permitido.png"; // Ruta de la imagen verde
-    validationImage.style.display = "block"; // Mostrar la imagen
-  } else {
-    // Código inválido: mostrar imagen roja
-    validationImage.src = "images/Denegado.png"; // Ruta de la imagen roja
-    validationImage.style.display = "block"; // Mostrar la imagen
-  }
+      if (data.isValid) {
+        // Código válido: mostrar imagen verde
+        validationImage.src = "images/Permitido.png";
+        validationImage.style.display = "block"; // Mostrar imagen
+        document.getElementById("result").innerText = `Acceso Permitido\nNombre: ${data.associatedName}\nCompañía: ${data.associatedCompany}\nPuesto: ${data.associatedPosition}`;
+      } else {
+        // Código inválido: mostrar imagen roja
+        validationImage.src = "images/Denegado.png";
+        validationImage.style.display = "block"; // Mostrar imagen
+        document.getElementById("result").innerText = "Acceso Denegado. Código no válido.";
+      }
 
-  // Ocultar la imagen después de 5 segundos
-  setTimeout(() => {
-    validationImage.style.display = "none";
-  }, 5000);
-
-  // No detenemos el escáner para que continúe escaneando
+      // Ocultar la imagen después de 5 segundos
+      setTimeout(() => {
+        validationImage.style.display = "none";
+      }, 5000);
+    })
+    .catch((error) => {
+      console.error("Error al conectar con la API:", error);
+      document.getElementById("result").innerText = "Error al validar el código QR.";
+    });
 }
+  // No detenemos el escáner para que continúe escaneando
+
 
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
