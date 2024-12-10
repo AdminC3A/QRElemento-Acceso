@@ -1,7 +1,14 @@
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
-    // Mostrar el texto escaneado
-    document.getElementById('result').innerText = `Código escaneado: ${decodedText}`;
+  // Mostrar el código escaneado
+  document.getElementById("result").innerText = `Código escaneado: ${decodedText}`;
+
+  // Detener el lector QR
+  html5QrcodeScanner.clear().then(() => {
+    console.log("Escaneo detenido.");
+  }).catch((error) => {
+    console.error("Error al detener el escaneo:", error);
+  });
 }
 
 // Manejar errores durante el escaneo
