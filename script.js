@@ -26,7 +26,7 @@ function startScanner(cameraId) {
       cameraId,
       {
         fps: 10,
-        qrbox: { width: 250, height: 250 },
+        qrbox: { width: 125, height: 125 },
       },
       onScanSuccess,
       onScanError
