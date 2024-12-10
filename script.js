@@ -2,7 +2,7 @@
 let lastCameraId = null;
 
 // Base de datos simulada de códigos permitidos
-const validCodes = ["12345", "67890", "abcde"]; // Ejemplo de códigos válidos
+const validCodes = ["A7DhWBBm", "67890", "abcde"]; // Ejemplo de códigos válidos
 
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
