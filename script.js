@@ -3,14 +3,25 @@ let database = [];
 
 // Cargar la base de datos CSV
 async function loadDatabase() {
-    const response = await fetch(csvUrl);
-    const csvData = await response.text();
+    try {
+        const response = await fetch(csvUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const csvData = await response.text();
 
-    const rows = csvData.split("\n").slice(1); // Quitar encabezados
-    database = rows.map(row => {
-        const [CodigoQR, Nombre, Compañia, Puesto] = row.split(",");
-        return { CodigoQR: CodigoQR.trim(), Nombre, Compañia, Puesto };
-    });
+        // Procesar el CSV
+        const rows = csvData.split("\n").slice(1); // Saltar la fila de encabezados
+        database = rows.map(row => {
+            const [CodigoQR, Nombre, Compañia, Puesto] = row.split(",");
+            return { CodigoQR: CodigoQR.trim(), Nombre, Compañia, Puesto };
+        });
+
+        console.log("Base de datos cargada:", database);
+    } catch (error) {
+        console.error("Error al cargar la base de datos:", error);
+        document.getElementById("result").innerText = "Error al cargar la base de datos.";
+    }
 }
 
 // Manejar el resultado exitoso del escaneo
