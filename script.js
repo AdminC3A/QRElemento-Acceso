@@ -23,10 +23,10 @@ function onScanSuccess(decodedText, decodedResult) {
     validationImage.style.display = "block"; // Mostrar la imagen
   }
 
-  // Ocultar la imagen después de 2 segundos
+  // Ocultar la imagen después de 5 segundos
   setTimeout(() => {
     validationImage.style.display = "none";
-  }, 2000);
+  }, 5000);
 
   // No detenemos el escáner para que continúe escaneando
 }
