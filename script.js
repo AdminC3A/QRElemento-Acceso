@@ -70,19 +70,19 @@ const html5QrCode = new Html5Qrcode("reader");
 // Lógica para iniciar el lector QR
 const startScanning = () => {
     html5QrCode.start(
-        { facingMode: "environment" }, // Usa la cámara trasera
+        { facingMode: "environment" }, // Fuerza la cámara trasera
         {
             fps: 10,
             qrbox: { width: 250, height: 250 } // Tamaño del cuadro de escaneo
         },
-        onScanSuccess, // Callback para éxito
-        onScanError // Callback para errores
+        onScanSuccess,
+        onScanError
     ).catch(err => {
-        console.error("No se pudo iniciar el lector:", err);
+        console.error("Error al iniciar el lector:", err);
 
-        // Mostrar mensaje de error en la interfaz
+        // Muestra un mensaje en la interfaz
         const errorMessage = document.createElement('p');
-        errorMessage.innerText = "Error: No se pudo acceder a la cámara. Asegúrate de que el navegador tiene los permisos necesarios.";
+        errorMessage.innerText = "No se pudo acceder a la cámara. Verifica los permisos en tu navegador.";
         readerContainer.appendChild(errorMessage);
     });
 };
