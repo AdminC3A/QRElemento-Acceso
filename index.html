@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Validator</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/html5-qrcode"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso QR</title>
+  <link rel="stylesheet" href="styles.css"> <!-- Estilos opcionales -->
+  <script type="module" src="script.js" defer></script> <!-- Script principal -->
 </head>
 <body>
-    <h1>Validador de Códigos QR</h1>
+  <header>
+    <h1>Sistema de Validación de Accesos</h1>
+  </header>
+  <main>
+    <!-- Contenedor para el lector QR -->
+    <div id="reader" style="width: 300px; margin: auto;"></div>
     
-    <!-- Contenedor del lector QR -->
-    <div id="reader-container"></div>
-
-    <!-- Contenedor del resultado -->
-    <div id="result" class="hidden">
-        <img id="status-image" src="" alt="Resultado">
-        <p id="status-message"></p>
-        <button id="retry-button">Reintentar</button>
+    <!-- Mensajes -->
+    <div id="result">
+      <p id="message"></p>
     </div>
-
-    <script src="script.js"></script>
+    
+    <!-- Botón para reiniciar escaneo -->
+    <button id="retry" style="display: none;">Reintentar</button>
+  </main>
 </body>
 </html>
-
-
