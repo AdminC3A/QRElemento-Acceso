@@ -1,12 +1,53 @@
-import { Html5QrcodeScanner } from "https://unpkg.com/html5-qrcode?module";
+import { Html5Qrcode, Html5QrcodeScanner } from "https://unpkg.com/html5-qrcode?module";
 
-let html5QrcodeScanner; // Declaramos esta variable global para reutilizar la configuración
+let html5Qrcode;
 
-// Función que maneja la validación del código QR
+function initializeCamera() {
+  const readerElement = document.getElementById("reader");
+
+  // Inicializa el lector QR
+  html5Qrcode = new Html5Qrcode("reader");
+
+  Html5Qrcode.getCameras()
+    .then((cameras) => {
+      if (cameras && cameras.length) {
+        // Usa la cámara trasera si está disponible
+        const backCamera = cameras.find((camera) => camera.label.toLowerCase().includes("back")) || cameras[0];
+        
+        html5Qrcode.start(
+          backCamera.id, // ID de la cámara seleccionada
+          {
+            fps: 10, // Velocidad de fotogramas
+            qrbox: { width: 250, height: 250 }, // Área de escaneo
+          },
+          onScanSuccess,
+          onScanError
+        );
+      } else {
+        alert("No se encontraron cámaras.");
+      }
+    })
+    .catch((err) => {
+      console.error("Error al obtener las cámaras:", err);
+      alert("Error al acceder a la cámara. Verifica los permisos.");
+    });
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+  console.log(`Código escaneado: ${decodedText}`);
+  document.getElementById("result").innerText = `Código escaneado: ${decodedText}`;
+  validateAccess(decodedText);
+  html5Qrcode.stop(); // Detenemos el lector tras un escaneo exitoso
+}
+
+function onScanError(errorMessage) {
+  console.error("Error durante el escaneo: ", errorMessage);
+}
+
+// Validar el código QR contra la API
 function validateAccess(qrCode) {
- const apiUrl = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbxdV2r8L5t5-_yA4LesgdrMJH5LSjXmmWy339B6Miz3Mk2n80-zFL107tP3geB1G7p8/exec";
+  const apiUrl = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbxdV2r8L5t5-_yA4LesgdrMJH5LSjXmmWy339B6Miz3Mk2n80-zFL107tP3geB1G7p8/exec";
 
-function validateAccess(qrCode) {
   fetch(`${apiUrl}?qrCode=${encodeURIComponent(qrCode)}`)
     .then((response) => response.json())
     .then((data) => {
@@ -16,15 +57,15 @@ function validateAccess(qrCode) {
       if (data.isValid) {
         resultElement.innerText = "Acceso permitido ✅";
         resultElement.style.color = "green";
-        statusImage.src = "./images/permitido.png"; // Ruta de la imagen verde
+        statusImage.src = "./images/permitido.png";
       } else {
         resultElement.innerText = "Acceso denegado ❌";
         resultElement.style.color = "red";
-        statusImage.src = "./images/denegado.png"; // Ruta de la imagen roja
+        statusImage.src = "./images/denegado.png";
       }
 
-      statusImage.style.display = "block"; // Mostrar la imagen
-      document.getElementById("retry").style.display = "block"; // Mostrar el botón de reinicio
+      statusImage.style.display = "block";
+      document.getElementById("retry").style.display = "block";
     })
     .catch((error) => {
       console.error("Error al validar el QR:", error);
@@ -33,46 +74,13 @@ function validateAccess(qrCode) {
     });
 }
 
-
-// Función para reiniciar el escaneo sin volver a solicitar permisos
+// Reiniciar el lector QR
 function restartScanner() {
   document.getElementById("result").innerText = "Por favor, escanea un código QR...";
   document.getElementById("retry").style.display = "none";
   document.getElementById("status-image").style.display = "none";
-
-  // Reiniciar el escaneo sin destruir el lector
-  html5QrcodeScanner.resume();
+  initializeCamera(); // Reinicia la cámara
 }
 
-// Manejar el resultado exitoso del escaneo
-function onScanSuccess(decodedText, decodedResult) {
-  console.log(`Código escaneado: ${decodedText}`);
-  document.getElementById("result").innerText = `Código escaneado: ${decodedText}`;
-
-  // Detener el escaneo
-  html5QrcodeScanner.pause(); // Detenemos el escaneo para procesar
-  validateAccess(decodedText); // Validar el QR escaneado
-}
-
-// Manejar errores durante el escaneo
-function onScanError(errorMessage) {
-  console.error("Error durante el escaneo: ", errorMessage);
-}
-
-// Inicializar el lector QR
-function initializeScanner() {
-  html5QrcodeScanner = new Html5QrcodeScanner(
-    "reader",
-    {
-      fps: 10,
-      qrbox: 250,
-      rememberLastUsedCamera: true, // Recordar la cámara utilizada
-      facingMode: { exact: "environment" }, // Configurar cámara trasera
-    }
-  );
-
-  html5QrcodeScanner.render(onScanSuccess, onScanError);
-}
-
-// Iniciar el lector QR al cargar la página
-initializeScanner();
+// Inicializa la cámara al cargar la página
+window.onload = initializeCamera;
