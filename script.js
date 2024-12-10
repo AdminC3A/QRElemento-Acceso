@@ -1,6 +1,6 @@
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText, decodedResult) {
-  // Muestra el código escaneado en el elemento 'result'
+  // Mostrar el código escaneado
   document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
 
   // Detener el escaneo y liberar la cámara
@@ -12,6 +12,7 @@ function onScanSuccess(decodedText, decodedResult) {
     console.error("Error al detener el escaneo:", error);
   });
 }
+
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
     console.error("Error durante el escaneo: ", errorMessage);
