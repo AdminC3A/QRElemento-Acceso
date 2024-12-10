@@ -2,7 +2,7 @@
 let lastCameraId = null;
 
 // URL de la base de datos CSV alojada en GitHub
-const csvUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento/main/data/base_de_datos.csv";
+const csvUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento/refs/heads/main/data/base_de_datos.csv;
 
 // Variable para almacenar la base de datos cargada
 let validCodes = [];
