@@ -1,58 +1,46 @@
-/* General styling */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
 }
 
-h1 {
-    color: #333;
-    margin-top: 20px;
+header {
+  background-color: #007bff;
+  color: white;
+  padding: 1rem;
 }
 
-/* Contenedor del lector QR */
-#reader-container {
-    margin: 20px auto;
-    width: 300px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    overflow: hidden;
+main {
+  margin: 2rem auto;
+  max-width: 600px;
 }
 
-/* Contenedor oculto para el resultado */
-.hidden {
-    display: none;
+#reader {
+  border: 2px dashed #007bff;
+  padding: 20px;
 }
 
-/* Estilo para las imágenes de estado */
-#result img {
-    width: 100px;
-    margin: 20px auto;
+#result {
+  margin-top: 20px;
+  font-size: 1.2rem;
 }
 
-/* Botón para reiniciar */
-#retry-button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-#retry-button:hover {
-    background-color: #0056b3;
+button:hover {
+  background-color: #0056b3;
 }
-/* Ajustes para móviles */
-@media (max-width: 768px) {
-    #reader-container {
-        width: 90%; /* Reduce el tamaño para pantallas pequeñas */
-        margin: 20px auto;
-    }
 
-    #result img {
-        width: 80px; /* Ajusta el tamaño de las imágenes de resultado */
     }
 }
