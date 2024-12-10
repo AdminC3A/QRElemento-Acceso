@@ -1,28 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elemento Arquitectura Interior</title>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <title>Html5-Qrcode Demo</title>
+    <script src="https://unpkg.com/html5-qrcode"></script> <!-- Incluye la biblioteca desde CDN -->
 </head>
 <body>
-    <header>
-        <h1>Elemento Arquitectura Interior</h1>
-    </header>
-  <main>
-  <div id="reader-container" style="position: relative;">
-    <div id="reader"></div>
-    <img id="validation-image" src="" alt="Validación" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 10;">
-  </div>
-  <p id="result">Por favor, escanea un código QR...</p>
-</main>
+    <h1>QR Code Scanner</h1>
+    <!-- Contenedor para el lector -->
+    <div id="qr-reader" style="width:500px"></div>
+    <!-- Contenedor para mostrar los resultados -->
+    <div id="qr-reader-results"></div>
+    <script>
+        // Función que asegura que el DOM esté cargado
+        function docReady(fn) {
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                setTimeout(fn, 1);
+            } else {
+                document.addEventListener("DOMContentLoaded", fn);
+            }
+        }
 
-    <footer>
-        <p>Elemento Arquitectura Interior © 2024</p>
-    </footer>
+        // Inicializa el lector QR cuando el DOM esté listo
+        docReady(function () {
+            var resultContainer = document.getElementById('qr-reader-results');
+            var lastResult, countResults = 0;
 
-    <script src="script.js"></script>
+            function onScanSuccess(decodedText, decodedResult) {
+                // Si es un nuevo código, lo procesamos
+                if (decodedText !== lastResult) {
+                    ++countResults;
+                    lastResult = decodedText;
+                    resultContainer.innerText = `Código escaneado: ${decodedText}`;
+                    console.log(`Resultado del escaneo: ${decodedText}`, decodedResult);
+                }
+            }
+
+            // Configuración del escáner
+            var html5QrcodeScanner = new Html5QrcodeScanner(
+                "qr-reader", // ID del contenedor para la cámara
+                { fps: 10, qrbox: 250 } // Opciones del lector
+            );
+            html5QrcodeScanner.render(onScanSuccess);
+        });
+    </script>
 </body>
 </html>
