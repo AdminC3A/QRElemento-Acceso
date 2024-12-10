@@ -1,113 +1,69 @@
-// Variable global para almacenar la última cámara seleccionada
-let lastCameraId = null;
+const csvUrl = "https://raw.githubusercontent.com/TU-USUARIO/TU-REPOSITORIO/main/data/base_de_datos.csv"; // Cambia esta URL según tu repositorio
+let database = [];
 
-// Base de datos simulada de códigos permitidos
-const apiUrl = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbwrTwr8mIhDPHOS5APWE6C4cuvKlv0F0zXvhG-5km1b5Zw7MKfbjtLmC3eJvvpQsUbb/exec";
+// Cargar la base de datos CSV
+async function loadDatabase() {
+    const response = await fetch(csvUrl);
+    const csvData = await response.text();
+
+    const rows = csvData.split("\n").slice(1); // Quitar encabezados
+    database = rows.map(row => {
+        const [CodigoQR, Nombre, Compañia, Puesto] = row.split(",");
+        return { CodigoQR: CodigoQR.trim(), Nombre, Compañia, Puesto };
+    });
+}
 
 // Manejar el resultado exitoso del escaneo
-function onScanSuccess(decodedText, decodedResult) {
-  html5Qrcode.pause(); // Pausa temporalmente el lector
+function onScanSuccess(decodedText) {
+    const resultElement = document.getElementById("result");
+    const statusImage = document.getElementById("status-image");
 
-  // Validación del código con la API
-  fetch(`${apiUrl}?qrCode=${encodeURIComponent(decodedText)}`)
-    .then((response) => response.json())
-    .then((data) => {
-      const validationImage = document.getElementById("validation-image");
+    // Buscar en la base de datos
+    const match = database.find(entry => entry.CodigoQR === decodedText);
 
-      if (data.isValid) {
-        validationImage.src = "images/Permitido.png";
-        validationImage.style.display = "block";
-        resultElement.innerText = `Acceso Permitido\nNombre: ${data.associatedName}\nCompañía: ${data.associatedCompany}\nPuesto: ${data.associatedPosition}`;
-      } else {
-        validationImage.src = "images/Denegado.png";
-        validationImage.style.display = "block";
+    if (match) {
+        // Código válido
+        statusImage.src = "images/Permitido.png";
+        statusImage.style.display = "block";
+        resultElement.innerText = `Acceso Permitido\nNombre: ${match.Nombre}\nCompañía: ${match.Compañia}\nPuesto: ${match.Puesto}`;
+    } else {
+        // Código inválido
+        statusImage.src = "images/Denegado.png";
+        statusImage.style.display = "block";
         resultElement.innerText = "Acceso Denegado. Código no válido.";
-      }
+    }
 
-      // Ocultar la imagen y reanudar el escaneo después de 5 segundos
-      setTimeout(() => {
-        validationImage.style.display = "none";
-        html5Qrcode.resume(); // Reanuda el lector
-      }, 5000);
-    })
-    .catch((error) => {
-      console.error("Error al conectar con la API:", error);
-      resultElement.innerText = "Error al validar el código QR.";
-      html5Qrcode.resume(); // Reanuda incluso en caso de error
-    });
+    // Ocultar la imagen después de 5 segundos
+    setTimeout(() => {
+        statusImage.style.display = "none";
+    }, 5000);
 }
 
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
-  console.error("Error durante el escaneo: ", errorMessage);
+    console.error("Error durante el escaneo: ", errorMessage);
 }
 
-// Función para iniciar el escaneo con una cámara específica
-function startScanner(cameraId) {
-  const html5Qrcode = new Html5Qrcode("reader");
-
-  html5Qrcode
-    .start(
-      cameraId,
-      {
-        fps: 10,
-        qrbox: { width: 125, height: 125 },
-      },
-      onScanSuccess,
-      onScanError
-    )
-    .then(() => {
-      lastCameraId = cameraId; // Guardar el ID de la cámara seleccionada
-    })
-    .catch((error) => {
-      console.error("Error al iniciar el escaneo: ", error);
-    });
+// Inicializar el escáner QR
+function initScanner() {
+    const html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: 250 }
+    );
+    html5QrcodeScanner.render(onScanSuccess, onScanError);
 }
 
-// Función para reiniciar el escáner QR
+// Función para reiniciar el escáner
 function restartScanner() {
-  document.getElementById("result").innerText = "Por favor, escanea un código QR...";
-  document.getElementById("retry").style.display = "none"; // Ocultar el botón de reinicio
-
-  // Si ya se seleccionó una cámara previamente, usarla
-  if (lastCameraId) {
-    startScanner(lastCameraId);
-  } else {
-    // Si no hay una cámara seleccionada, buscar la cámara trasera automáticamente
-    getBackCameraId()
-      .then((cameraId) => {
-        startScanner(cameraId);
-      })
-      .catch((error) => {
-        console.error("Error al obtener la cámara trasera:", error);
-        document.getElementById("result").innerText =
-          "Error al acceder a la cámara. Verifica los permisos.";
-      });
-  }
+    document.getElementById("result").innerText = "Por favor, escanea un código QR...";
+    document.getElementById("status-image").style.display = "none";
+    initScanner();
 }
 
-// Función para obtener la cámara trasera automáticamente
-function getBackCameraId() {
-  return Html5Qrcode.getCameras().then((cameras) => {
-    if (cameras && cameras.length > 0) {
-      // Buscar la cámara trasera
-      const backCamera = cameras.find((camera) =>
-        camera.label.toLowerCase().includes("back")
-      );
-      return backCamera ? backCamera.id : cameras[0].id; // Usar la trasera si está disponible
-    } else {
-      throw new Error("No se encontraron cámaras disponibles.");
-    }
-  });
-}
-
-// Inicializar el escáner QR con la cámara trasera automáticamente
-getBackCameraId()
-  .then((cameraId) => {
-    startScanner(cameraId); // Usar cámara trasera automáticamente
-  })
-  .catch((error) => {
-    console.error("Error al obtener la cámara trasera:", error);
-    document.getElementById("result").innerText =
-      "Error al acceder a la cámara. Verifica los permisos.";
-  });
+// Cargar la base de datos y inicializar el escáner
+loadDatabase()
+    .then(initScanner)
+    .catch(error => {
+        console.error("Error al cargar la base de datos:", error);
+        document.getElementById("result").innerText = "Error al cargar la base de datos.";
+    });
