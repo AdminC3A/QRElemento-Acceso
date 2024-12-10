@@ -4,7 +4,9 @@ let html5QrcodeScanner; // Declaramos esta variable global para reutilizar la co
 
 // Función que maneja la validación del código QR
 function validateAccess(qrCode) {
-  const apiUrl = "https://tu-api.com/validar"; // Cambia a tu URL de validación
+ const apiUrl = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbxdV2r8L5t5-_yA4LesgdrMJH5LSjXmmWy339B6Miz3Mk2n80-zFL107tP3geB1G7p8/exec";
+
+function validateAccess(qrCode) {
   fetch(`${apiUrl}?qrCode=${encodeURIComponent(qrCode)}`)
     .then((response) => response.json())
     .then((data) => {
@@ -14,15 +16,15 @@ function validateAccess(qrCode) {
       if (data.isValid) {
         resultElement.innerText = "Acceso permitido ✅";
         resultElement.style.color = "green";
-        statusImage.src = "./images/permitido.png"; // Imagen verde
+        statusImage.src = "./images/permitido.png"; // Ruta de la imagen verde
       } else {
         resultElement.innerText = "Acceso denegado ❌";
         resultElement.style.color = "red";
-        statusImage.src = "./images/denegado.png"; // Imagen roja
+        statusImage.src = "./images/denegado.png"; // Ruta de la imagen roja
       }
 
       statusImage.style.display = "block"; // Mostrar la imagen
-      document.getElementById("retry").style.display = "block"; // Mostrar botón de reinicio
+      document.getElementById("retry").style.display = "block"; // Mostrar el botón de reinicio
     })
     .catch((error) => {
       console.error("Error al validar el QR:", error);
@@ -30,6 +32,7 @@ function validateAccess(qrCode) {
       document.getElementById("result").style.color = "orange";
     });
 }
+
 
 // Función para reiniciar el escaneo sin volver a solicitar permisos
 function restartScanner() {
