@@ -23,29 +23,30 @@ async function loadDatabase() {
     }
 }
 function sendToGoogleSheets(qrCode, result) {
-    fetch("https://script.google.com/macros/s/AKfycbyc3APVJRtnfF4DDERYH0wfU8vdZgW8KTbhQsbjIyY1EYs_F7vIaG96cV-XAiLibzVd/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbxt4f9rXduGzVrxXbdGXTpOif-EOcAmyf21AD6h20FlDvh-foSxUEtXbzJTAITXtRL3/exec", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            qrCode,
-            result,
-            timestamp: new Date().toISOString()
+            qrCode: qrCode,
+            result: result,
+            timestamp: new Date().toISOString(),
+        }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                console.log("Registro guardado correctamente en Google Sheets.");
+            } else {
+                console.error("Error al guardar el registro en Google Sheets:", data.error);
+            }
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log("Registro guardado correctamente en Google Sheets.");
-        } else {
-            console.error("Error al guardar el registro en Google Sheets:", data.error);
-        }
-    })
-    .catch(error => {
-        console.error("Error al conectar con Google Sheets:", error);
-    });
+        .catch((error) => {
+            console.error("Error al conectar con Google Sheets:", error);
+        });
 }
+
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText) {
     document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
