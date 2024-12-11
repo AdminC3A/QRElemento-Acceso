@@ -23,7 +23,7 @@ async function loadDatabase() {
     }
 }
 function sendToGoogleSheets(qrCode, result) {
-    fetch("https://script.google.com/macros/s/AKfycb.../exec", {
+    fetch("https://script.google.com/macros/s/AKfycbyc3APVJRtnfF4DDERYH0wfU8vdZgW8KTbhQsbjIyY1EYs_F7vIaG96cV-XAiLibzVd/exec", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
