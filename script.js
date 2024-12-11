@@ -1,8 +1,27 @@
 // Variable global para almacenar la última cámara seleccionada
 let lastCameraId = null;
 
-// Base de datos simulada de códigos permitidos
-const validCodes = ["A7DhWBBm", "67890", "abcde"]; // Ejemplo de códigos válidos
+// URL de la base de datos CSV alojada en GitHub
+const csvUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento/main/data/base_de_datos.csv";
+
+// Variable para almacenar la base de datos cargada
+let validCodes = [];
+
+// Función para cargar la base de datos desde el CSV
+async function loadDatabase() {
+    try {
+        const response = await fetch(csvUrl);
+        const csvText = await response.text();
+
+        // Procesar el contenido del archivo CSV
+        validCodes = csvText.split("\n").map(row => row.trim()).filter(code => code); // Filtrar valores vacíos
+        document.getElementById("result").innerText = "Base de datos cargada correctamente.";
+        console.log("Base de datos cargada:", validCodes);
+    } catch (error) {
+        console.error("Error al cargar la base de datos:", error);
+        document.getElementById("result").innerText = "Error al cargar la base de datos.";
+    }
+}
 
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText) {
@@ -13,9 +32,11 @@ function onScanSuccess(decodedText) {
     if (validCodes.includes(decodedText)) {
         validationImage.src = "images/Permitido.png";
         validationImage.style.display = "block";
+        document.getElementById("result").innerText += " - Acceso Permitido";
     } else {
         validationImage.src = "images/Denegado.png";
         validationImage.style.display = "block";
+        document.getElementById("result").innerText += " - Acceso Denegado";
     }
 
     setTimeout(() => {
@@ -75,13 +96,15 @@ function getBackCameraId() {
     });
 }
 
-// Inicializar el escáner QR con la cámara trasera automáticamente
-getBackCameraId()
-    .then((cameraId) => {
-        startScanner(cameraId);
-    })
-    .catch((error) => {
-        console.error("Error al obtener la cámara trasera:", error);
-        document.getElementById("result").innerText =
-            "Error al acceder a la cámara. Verifica los permisos.";
-    });
+// Inicializar la aplicación
+loadDatabase().then(() => {
+    getBackCameraId()
+        .then((cameraId) => {
+            startScanner(cameraId);
+        })
+        .catch((error) => {
+            console.error("Error al obtener la cámara trasera:", error);
+            document.getElementById("result").innerText =
+                "Error al acceder a la cámara. Verifica los permisos.";
+        });
+});
