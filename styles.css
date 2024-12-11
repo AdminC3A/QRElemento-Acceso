@@ -1,90 +1,68 @@
 body {
+    font-family: Arial, sans-serif;
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #000;
-    color: #fff;
+    padding: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
+    background-color: #ffffff;
+    color: #333333;
+}
+
+header, footer {
+    background-color: #333333;
+    color: #ffffff;
+    text-align: center;
+    width: 100%;
+    padding: 15px 0;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    max-width: 600px;
+    width: 100%;
 }
 
 #reader-container {
     position: relative;
-    width: 100%;
-    max-width: 400px;
-    aspect-ratio: 1;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.8);
+    width: 50%;
+    margin: 0 auto;
 }
 
 #reader {
     width: 100%;
-    height: 100%;
-    z-index: 1;
 }
 
-#overlay {
+#validation-image {
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2;
-    background: rgba(0, 0, 0, 0.6);
-}
-
-#overlay .frame {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 70%;
-    height: 70%;
-    transform: translate(-50%, -50%);
-    border: 2px solid transparent;
-}
-
-#overlay .corner {
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    border: 4px solid #00ff00;
-    background: transparent;
-}
-
-#overlay .corner.top-left {
-    top: 0;
-    left: 0;
-    border-right: none;
-    border-bottom: none;
-}
-
-#overlay .corner.top-right {
-    top: 0;
-    right: 0;
-    border-left: none;
-    border-bottom: none;
-}
-
-#overlay .corner.bottom-left {
-    bottom: 0;
-    left: 0;
-    border-right: none;
-    border-top: none;
-}
-
-#overlay .corner.bottom-right {
-    bottom: 0;
-    right: 0;
-    border-left: none;
-    border-top: none;
+    object-fit: cover;
+    z-index: 10;
 }
 
 #result {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
+    font-size: 1.5rem;
+    font-weight: bold;
     text-align: center;
-    font-size: 1.2em;
-    z-index: 3;
+    margin-top: 1rem;
+}
+
+footer p {
+    margin: 0;
+    font-size: 14px;
 }
