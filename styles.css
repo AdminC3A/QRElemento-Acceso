@@ -34,61 +34,50 @@ main {
     width: 100%;
 }
 
+/* Contenedor del marco */
 #reader-container {
     position: relative;
-    width: 50%;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 320px; /* Ajusta según tu diseño */
+    height: 320px; /* Cuadrado */
+    margin: auto;
+    overflow: hidden;
+    border: 1px solid transparent;
 }
+
 /* Esquinas verdes */
-#reader-container::before,
-#reader-container::after {
-    content: "";
+.corner {
     position: absolute;
+    width: 20px; /* Ajusta el tamaño de las esquinas */
+    height: 20px;
     border: 4px solid #00FF00;
     pointer-events: none;
 }
 
-#reader-container::before {
+.corner.tl {
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    border-width: 0 0 4px 4px;
-    border-color: transparent transparent #00FF00 #00FF00;
+    border-right: none;
+    border-bottom: none;
 }
 
-#reader-container::after {
+.corner.tr {
+    top: 0;
+    right: 0;
+    border-left: none;
+    border-bottom: none;
+}
+
+.corner.bl {
+    bottom: 0;
+    left: 0;
+    border-right: none;
+    border-top: none;
+}
+
+.corner.br {
     bottom: 0;
     right: 0;
-    width: 100%;
-    height: 100%;
-    border-width: 4px 4px 0 0;
-    border-color: #00FF00 #00FF00 transparent transparent;
-}
-
-#reader {
-    width: 100%;
-}
-
-#validation-image {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 10;
-}
-
-#result {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 1rem;
-}
-
-footer p {
-    margin: 0;
-    font-size: 14px;
+    border-left: none;
+    border-top: none;
 }
