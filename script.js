@@ -35,7 +35,7 @@ function onScanSuccess(decodedText) {
     document.getElementById("result").innerText += " - Acceso Permitido";
 
     // Registrar el acceso en Google Sheets
-    fetch("https://script.google.com/macros/s/AKfycbyz9SoTQpYDjkz3v11IJktUcyig32s4vK57GppRlvdis0QG2VYNkriw026XkYObXLzb/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbyc3APVJRtnfF4DDERYH0wfU8vdZgW8KTbhQsbjIyY1EYs_F7vIaG96cV-XAiLibzVd/exec", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
