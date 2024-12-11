@@ -23,48 +23,49 @@ async function loadDatabase() {
     }
 }
 
-// Función para enviar datos a Google Sheets
+// URL del Google Apps Script para registrar los datos
+const postUrl = "https://script.google.com/macros/s/AKfycbwSSYR7qq4vHyvqPOV_ThS2cWSGfitklgGE1_cnJx4BnHq-Z8rL_NhaYJ9nQSLObOn8/exec";
+
+// Función para enviar datos a Google Sheets con "no-cors"
 function sendToGoogleSheets(qrCode, result, timestamp) {
-    fetch("https://script.google.com/macros/s/AKfycbxt4f9rXduGzVrxXbdGXTpOif-EOcAmyf21AD6h20FlDvh-foSxUEtXbzJTAITXtRL3/exec", {
+    fetch(postUrl, {
         method: "POST",
+        mode: "no-cors", // Configuración no-cors
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            qrCode: qrCode,
-            result: result,
-            timestamp: timestamp,
+            qrCode: decodedText, // Valor extraído del QR
+    result: result,      // Resultado (Permitido o Denegado)
+    timestamp: timestamp // Marca de tiempo
         }),
     })
-    .then((response) => response.json())
-    .then((data) => {
-        if (data.success) {
-            console.log("Registro guardado correctamente en Google Sheets.");
-        } else {
-            console.error("Error al guardar el registro en Google Sheets:", data.error);
-        }
+    .then(() => {
+        console.log("Datos enviados a Google Sheets."); // Confirmación local de envío
     })
     .catch((error) => {
-        console.error("Error al conectar con Google Sheets:", error);
+        console.error("Error al enviar el POST al Google Sheets:", error);
     });
 }
+
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText) {
     const validationImage = document.getElementById("validation-image");
+    document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
 
-    if (validCodes.includes(decodedText)) {
-    validationImage.src = "images/Permitido.png";
-    validationImage.style.display = "block";
-    document.getElementById("result").innerText += " - Acceso Permitido";
+    if (validCodes.includes(decodedText)) { // Si el código es permitido
+        validationImage.src = "images/Permitido.png";
+        validationImage.style.display = "block";
+        document.getElementById("result").innerText += " - Acceso Permitido";
 
-    // Llamar a la función para registrar el acceso en Google Sheets
-    const timestamp = new Date().toISOString(); // Obtener el timestamp actual
-    sendToGoogleSheets(decodedText, "Permitido", timestamp);
-} else {
-    validationImage.src = "images/Denegado.png";
-    validationImage.style.display = "block";
-    document.getElementById("result").innerText += " - Acceso Denegado";
-}
+        const timestamp = new Date().toISOString(); // Timestamp actual
+        sendToGoogleSheets(decodedText, "Permitido", timestamp); // Enviar datos al Google Sheets
+    } else { // Si el código no es permitido
+        validationImage.src = "images/Denegado.png";
+        validationImage.style.display = "block";
+        document.getElementById("result").innerText += " - Acceso Denegado";
+    }
+
     // Ocultar la imagen después de 5 segundos
     setTimeout(() => {
         validationImage.style.display = "none";
