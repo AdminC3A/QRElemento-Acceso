@@ -23,47 +23,49 @@ async function loadDatabase() {
     }
 }
 
-// URL del Google Apps Script para registrar los datos
+// URL del Google Apps Script
 const postUrl = "https://script.google.com/macros/s/AKfycbwSSYR7qq4vHyvqPOV_ThS2cWSGfitklgGE1_cnJx4BnHq-Z8rL_NhaYJ9nQSLObOn8/exec";
 
-// Función para enviar datos a Google Sheets con "no-cors"
-function sendToGoogleSheets(qrCode, result, timestamp) {
+// Función para enviar el POST
+function sendPost(qrCode, result, timestamp) {
     fetch(postUrl, {
         method: "POST",
-        mode: "no-cors", // Configuración no-cors
+        mode: "no-cors", // Permitir envío sin verificar la respuesta
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            qrCode: decodedText, // Valor extraído del QR
-    result: result,      // Resultado (Permitido o Denegado)
-    timestamp: timestamp // Marca de tiempo
+            qrCode: qrCode,
+            result: result,
+            timestamp: timestamp,
         }),
     })
     .then(() => {
-        console.log("Datos enviados a Google Sheets."); // Confirmación local de envío
+        console.log("Registro enviado a Google Sheets.");
     })
     .catch((error) => {
-        console.error("Error al enviar el POST al Google Sheets:", error);
+        console.error("Error al enviar la solicitud:", error);
     });
 }
 
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText) {
     const validationImage = document.getElementById("validation-image");
-    document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
+    const timestamp = new Date().toISOString(); // Obtener el timestamp actual
 
-    if (validCodes.includes(decodedText)) { // Si el código es permitido
+    if (validCodes.includes(decodedText)) {
+        // Mostrar imagen de acceso permitido
         validationImage.src = "images/Permitido.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText += " - Acceso Permitido";
+        document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Permitido`;
 
-        const timestamp = new Date().toISOString(); // Timestamp actual
-        sendToGoogleSheets(decodedText, "Permitido", timestamp); // Enviar datos al Google Sheets
-    } else { // Si el código no es permitido
+        // Enviar datos a Google Sheets
+        sendPost(decodedText, "Permitido", timestamp);
+    } else {
+        // Mostrar imagen de acceso denegado
         validationImage.src = "images/Denegado.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText += " - Acceso Denegado";
+        document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Denegado`;
     }
 
     // Ocultar la imagen después de 5 segundos
