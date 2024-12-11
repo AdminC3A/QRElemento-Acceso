@@ -36,12 +36,8 @@ main {
 
 #reader-container {
     position: relative;
-    width: 320px; /* Dimensión cuadrada */
-    height: 200px; /* Igual al ancho para que sea cuadrado */
+    width: 50%;
     margin: 0 auto;
-    background-color: #f9f9f9; /* Opcional: color de fondo */
-    border: 2px solid #cccccc; /* Opcional: borde */
-    border-radius: 5px; /* Opcional: esquinas redondeadas */
 }
 
 #reader {
