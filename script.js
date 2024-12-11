@@ -98,7 +98,10 @@ function startScanner(cameraId) {
     html5Qrcode
         .start(
             cameraId,
-            { fps: 15, qrbox: { width: 125, height: 125 } },
+            {
+                fps: 15,
+                qrbox: { width: 250, height: 250 }, // Tamaño del área de escaneo
+            },
             onScanSuccess,
             onScanError
         )
@@ -106,7 +109,8 @@ function startScanner(cameraId) {
             lastCameraId = cameraId;
         })
         .catch((error) => {
-            console.error("Error al iniciar el escaneo:", error);
+            console.error("Error al iniciar el escáner:", error);
+            document.getElementById("result").innerText = "Error al iniciar el escáner. Verifica permisos.";
         });
 }
 
