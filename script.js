@@ -22,6 +22,8 @@ async function loadDatabase() {
         document.getElementById("result").innerText = "Error al cargar la base de datos.";
     }
 }
+
+// Función para enviar datos a Google Sheets
 function sendToGoogleSheets(qrCode, result) {
     fetch("https://script.google.com/macros/s/AKfycbxt4f9rXduGzVrxXbdGXTpOif-EOcAmyf21AD6h20FlDvh-foSxUEtXbzJTAITXtRL3/exec", {
         method: "POST",
@@ -53,18 +55,27 @@ function onScanSuccess(decodedText) {
 
     const validationImage = document.getElementById("validation-image");
 
-   if (validCodes.includes(decodedText)) {
-    validationImage.src = "images/Permitido.png";
-    validationImage.style.display = "block";
-    document.getElementById("result").innerText += " - Acceso Permitido";
+    if (validCodes.includes(decodedText)) {
+        // Mostrar imagen "Permitido"
+        validationImage.src = "images/Permitido.png";
+        validationImage.style.display = "block";
+        document.getElementById("result").innerText += " - Acceso Permitido";
 
-    // Llamar a la función para registrar el acceso en Google Sheets
-    sendToGoogleSheets(decodedText, "Permitido");
-} else {
-    validationImage.src = "images/Denegado.png";
-    validationImage.style.display = "block";
-    document.getElementById("result").innerText += " - Acceso Denegado";
+        // Llamar a la función para registrar el acceso en Google Sheets
+        sendToGoogleSheets(decodedText, "Permitido");
+    } else {
+        // Mostrar imagen "Denegado"
+        validationImage.src = "images/Denegado.png";
+        validationImage.style.display = "block";
+        document.getElementById("result").innerText += " - Acceso Denegado";
+    }
+
+    // Ocultar la imagen después de 5 segundos
+    setTimeout(() => {
+        validationImage.style.display = "none";
+    }, 5000);
 }
+
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
     console.error("Error durante el escaneo:", errorMessage);
