@@ -24,31 +24,30 @@ async function loadDatabase() {
 }
 
 // Función para enviar datos a Google Sheets
-function sendToGoogleSheets(qrCode, result) {
+function sendToGoogleSheets(qrCode, result, timestamp) {
     fetch("https://script.google.com/macros/s/AKfycbxt4f9rXduGzVrxXbdGXTpOif-EOcAmyf21AD6h20FlDvh-foSxUEtXbzJTAITXtRL3/exec", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-        qrCode: decodedText,
-        result: "Permitido",
-        timestamp: new Date().toISOString(),
-    }),
-})
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                console.log("Registro guardado correctamente en Google Sheets.");
-            } else {
-                console.error("Error al guardar el registro en Google Sheets:", data.error);
-            }
-        })
-        .catch((error) => {
-            console.error("Error al conectar con Google Sheets:", error);
-        });
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            qrCode: qrCode,
+            result: result,
+            timestamp: timestamp,
+        }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.success) {
+            console.log("Registro guardado correctamente en Google Sheets.");
+        } else {
+            console.error("Error al guardar el registro en Google Sheets:", data.error);
+        }
+    })
+    .catch((error) => {
+        console.error("Error al conectar con Google Sheets:", error);
+    });
 }
-
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText) {
     const validationImage = document.getElementById("validation-image");
