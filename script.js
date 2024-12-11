@@ -1,6 +1,6 @@
 // Variables globales
 let lastCameraId = null;
-let database = [];
+let validCodes = [];
 const csvUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento/refs/heads/main/data/base_de_datos.csv";
 
 // Función para cargar la base de datos desde GitHub
@@ -10,39 +10,13 @@ async function loadDatabase() {
         const csvText = await response.text();
 
         // Procesar el contenido del archivo CSV
-        const rows = csvText.split("\n").slice(1); // Saltar encabezados
-        database = rows.map(row => {
-            const [CodigoQR, Nombre, Empresa, Puesto] = row.split(",");
-            return {
-                CodigoQR: CodigoQR?.trim(),
-                Nombre: Nombre?.trim(),
-                Empresa: Empresa?.trim(),
-                Puesto: Puesto?.trim(),
-            };
-        });
+        validCodes = csvText.split("\n").slice(1).map(row => row.trim()); // Saltar encabezados y limpiar espacios
 
-        // Mostrar mensaje de éxito
-        console.log("Base de datos cargada:", database);
+        console.log("Base de datos cargada:", validCodes);
         document.getElementById("result").innerText = "Base de datos cargada correctamente.";
     } catch (error) {
         console.error("Error al cargar la base de datos:", error);
         document.getElementById("result").innerText = "Error al cargar la base de datos.";
-    }
-}
-
-// Función para obtener la última fecha de modificación del archivo CSV
-async function getLastModified() {
-    const repoUrl = "https://api.github.com/repos/AdminC3A/QRElemento/commits?path=data/base_de_datos.csv";
-
-    try {
-        const response = await fetch(repoUrl);
-        const commits = await response.json();
-        const lastCommit = commits[0];
-        const lastModified = new Date(lastCommit.commit.committer.date);
-
-        document.getElementById("last-modified").innerText = `Última modificación: ${lastModified.toLocaleString()}`;
-    } catch (error) {
-        console.error("Error al obtener la fecha de modificación:", error);
     }
 }
 
@@ -53,16 +27,14 @@ function onScanSuccess(decodedText) {
     const validationImage = document.getElementById("validation-image");
 
     // Validar el código QR escaneado
-    const match = database.find(entry => entry.CodigoQR === decodedText);
-
-    if (match) {
+    if (validCodes.includes(decodedText)) {
         validationImage.src = "images/Permitido.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText = `Acceso permitido: ${match.Nombre}, ${match.Empresa}, ${match.Puesto}`;
+        document.getElementById("result").innerText = `Acceso permitido para el código: ${decodedText}`;
     } else {
         validationImage.src = "images/Denegado.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText = "Acceso denegado.";
+        document.getElementById("result").innerText = "Acceso denegado. Código no válido.";
     }
 
     setTimeout(() => {
@@ -125,7 +97,6 @@ function getBackCameraId() {
 // Inicializar la aplicación
 (async function initApp() {
     await loadDatabase(); // Cargar la base de datos
-    await getLastModified(); // Obtener la última fecha de modificación
 
     getBackCameraId()
         .then((cameraId) => {
