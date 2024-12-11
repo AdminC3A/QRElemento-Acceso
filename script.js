@@ -26,16 +26,16 @@ async function loadDatabase() {
 // Función para enviar datos a Google Sheets
 function sendToGoogleSheets(qrCode, result) {
     fetch("https://script.google.com/macros/s/AKfycbxt4f9rXduGzVrxXbdGXTpOif-EOcAmyf21AD6h20FlDvh-foSxUEtXbzJTAITXtRL3/exec", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            qrCode: qrCode,
-            result: result,
-            timestamp: new Date().toISOString(),
-        }),
-    })
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+        qrCode: decodedText,
+        result: "Permitido",
+        timestamp: new Date().toISOString(),
+    }),
+})
         .then((response) => response.json())
         .then((data) => {
             if (data.success) {
