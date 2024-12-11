@@ -70,8 +70,8 @@ footer p {
 #reader-container {
     position: relative;
     width: 100%;
-    max-width: 300px; /* Ajustar al tamaño deseado */
-    height: 300px;
+    max-width: 320px; /* Ajusta el tamaño deseado */
+    height: 320px;
     margin: 0 auto;
     overflow: hidden;
 }
@@ -84,21 +84,16 @@ footer p {
     z-index: 1;
 }
 
-/* Superposición del marco */
+/* Superposición del marco verde */
 #frame {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 80%; /* Ajustar al tamaño deseado */
-    height: 80%;
+    width: 60%; /* Ajusta al tamaño del marco interno */
+    height: 60%; /* Ajusta al tamaño del marco interno */
     transform: translate(-50%, -50%);
-    border: 4px solid transparent;
-    border-top: 4px solid green;
-    border-right: 4px solid green;
-    border-bottom: 4px solid green;
-    border-left: 4px solid green;
+    border: 4px solid green; /* Color del marco verde */
     z-index: 2; /* Por encima del lector */
-    background: rgba(255, 255, 255, 0.5); /* Fondo blanco semitransparente */
 }
 
 /* Fondo oscuro alrededor del lector */
@@ -109,8 +104,21 @@ footer p {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 0; /* Fondo detrás del lector */
+    background: rgba(0, 0, 0, 0.6); /* Fondo negro semitransparente */
+    z-index: 0;
+}
+
+/* Hacer el área central completamente transparente */
+#reader-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%; /* Tamaño del área transparente */
+    height: 60%; /* Tamaño del área transparente */
+    transform: translate(-50%, -50%);
+    background: transparent; /* Fondo transparente */
+    z-index: 1; /* Debajo del marco verde pero encima del fondo oscuro */
 }
 
 /* Texto de resultados */
