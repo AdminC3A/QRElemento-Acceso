@@ -35,7 +35,7 @@ function onScanSuccess(decodedText) {
     document.getElementById("result").innerText += " - Acceso Permitido";
 
     // Registrar el acceso en Google Sheets
-    fetch("https://script.google.com/a/macros/casatresaguas.com/s/AKfycbzgazNRLGnkSSV8WPIDPPDZUB_4l-ibq8nroqdn9zHJZgOuYa5K5hepJE_85ODqXkOB/exec", {
+    fetch("https://script.google.com/a/macros/casatresaguas.com/s/AKfycbwPXyC5Uzr7SSVHqY9mCo6a4oFkMSoMQSBc__SBzX2s4afGyHbLpE_2r7NUOow5kqAw/exec", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
