@@ -22,27 +22,15 @@ async function loadDatabase() {
         document.getElementById("result").innerText = "Error al cargar la base de datos.";
     }
 }
-
-// Manejar el resultado exitoso del escaneo
-function onScanSuccess(decodedText) {
-    document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
-
-    const validationImage = document.getElementById("validation-image");
-
-    if (validCodes.includes(decodedText)) {
-    validationImage.src = "images/Permitido.png";
-    validationImage.style.display = "block";
-    document.getElementById("result").innerText += " - Acceso Permitido";
-
-    // Registrar el acceso en Google Sheets
-    fetch("https://script.google.com/macros/s/AKfycbyc3APVJRtnfF4DDERYH0wfU8vdZgW8KTbhQsbjIyY1EYs_F7vIaG96cV-XAiLibzVd/exec", {
+function sendToGoogleSheets(qrCode, result) {
+    fetch("https://script.google.com/macros/s/AKfycb.../exec", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            qrCode: decodedText,
-            result: "Permitido",
+            qrCode,
+            result,
             timestamp: new Date().toISOString()
         })
     })
@@ -58,17 +46,24 @@ function onScanSuccess(decodedText) {
         console.error("Error al conectar con Google Sheets:", error);
     });
 }
- else {
-        validationImage.src = "images/Denegado.png";
-        validationImage.style.display = "block";
-        document.getElementById("result").innerText += " - Acceso Denegado";
-    }
+// Manejar el resultado exitoso del escaneo
+function onScanSuccess(decodedText) {
+    document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
 
-    setTimeout(() => {
-        validationImage.style.display = "none";
-    }, 5000);
+    const validationImage = document.getElementById("validation-image");
+
+   if (validCodes.includes(decodedText)) {
+    validationImage.src = "images/Permitido.png";
+    validationImage.style.display = "block";
+    document.getElementById("result").innerText += " - Acceso Permitido";
+
+    // Llamar a la función para registrar el acceso en Google Sheets
+    sendToGoogleSheets(decodedText, "Permitido");
+} else {
+    validationImage.src = "images/Denegado.png";
+    validationImage.style.display = "block";
+    document.getElementById("result").innerText += " - Acceso Denegado";
 }
-
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
     console.error("Error durante el escaneo:", errorMessage);
