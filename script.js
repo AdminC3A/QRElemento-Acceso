@@ -30,10 +30,35 @@ function onScanSuccess(decodedText) {
     const validationImage = document.getElementById("validation-image");
 
     if (validCodes.includes(decodedText)) {
-        validationImage.src = "images/Permitido.png";
-        validationImage.style.display = "block";
-        document.getElementById("result").innerText += " - Acceso Permitido";
-    } else {
+    validationImage.src = "images/Permitido.png";
+    validationImage.style.display = "block";
+    document.getElementById("result").innerText += " - Acceso Permitido";
+
+    // Registrar el acceso en Google Sheets
+    fetch("https://script.google.com/a/macros/casatresaguas.com/s/AKfycbzgazNRLGnkSSV8WPIDPPDZUB_4l-ibq8nroqdn9zHJZgOuYa5K5hepJE_85ODqXkOB/exec", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            qrCode: decodedText,
+            result: "Permitido",
+            timestamp: new Date().toISOString()
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Registro guardado correctamente en Google Sheets.");
+        } else {
+            console.error("Error al guardar el registro en Google Sheets:", data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error al conectar con Google Sheets:", error);
+    });
+}
+ else {
         validationImage.src = "images/Denegado.png";
         validationImage.style.display = "block";
         document.getElementById("result").innerText += " - Acceso Denegado";
