@@ -51,23 +51,23 @@ function sendToGoogleSheets(qrCode, result) {
 
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText) {
-    document.getElementById("result").innerText = `Código detectado: ${decodedText}`;
-
     const validationImage = document.getElementById("validation-image");
 
     if (validCodes.includes(decodedText)) {
-        // Mostrar imagen "Permitido"
+        // Mostrar la imagen de "Permitido"
         validationImage.src = "images/Permitido.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText += " - Acceso Permitido";
+        document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Permitido`;
 
-        // Llamar a la función para registrar el acceso en Google Sheets
-        sendToGoogleSheets(decodedText, "Permitido");
+        // Después de un pequeño retraso, enviar los datos a Google Sheets
+        setTimeout(() => {
+            sendToGoogleSheets(decodedText, "Permitido");
+        }, 500); // Retraso de 500ms para asegurar que la imagen se muestre primero
     } else {
-        // Mostrar imagen "Denegado"
+        // Mostrar la imagen de "Denegado"
         validationImage.src = "images/Denegado.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText += " - Acceso Denegado";
+        document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Denegado`;
     }
 
     // Ocultar la imagen después de 5 segundos
