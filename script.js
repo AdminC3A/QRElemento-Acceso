@@ -100,7 +100,7 @@ function startScanner(cameraId) {
             cameraId,
             {
                 fps: 15,
-                qrbox: { width: 250, height: 250 }, // Tamaño del área de escaneo
+                qrbox: { width: 100, height: 100 }, // Tamaño del área de escaneo
             },
             onScanSuccess,
             onScanError
