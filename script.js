@@ -1,16 +1,20 @@
 // Variable global para almacenar la última cámara seleccionada
 let lastCameraId = null;
 
-// URL de la base de datos CSV alojada en GitHub
-const csvUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento/main/data/base_de_datos.csv";
+// URL del Google Apps Script
+const postUrl = "https://script.google.com/macros/s/AKfycbwSSYR7qq4vHyvqPOV_ThS2cWSGfitklgGE1_cnJx4BnHq-Z8rL_NhaYJ9nQSLObOn8/exec";
 
 // Variable para almacenar la base de datos cargada
 let validCodes = [];
 
+// Variable para evitar duplicados
+let lastScannedCode = null;
+let lastScanTime = 0;
+
 // Función para cargar la base de datos desde el CSV
 async function loadDatabase() {
     try {
-        const response = await fetch(csvUrl);
+        const response = await fetch("https://raw.githubusercontent.com/AdminC3A/QRElemento/main/data/base_de_datos.csv");
         const csvText = await response.text();
 
         // Procesar el contenido del archivo CSV
@@ -23,11 +27,8 @@ async function loadDatabase() {
     }
 }
 
-// URL del Google Apps Script
-const postUrl = "https://script.google.com/macros/s/AKfycbwSSYR7qq4vHyvqPOV_ThS2cWSGfitklgGE1_cnJx4BnHq-Z8rL_NhaYJ9nQSLObOn8/exec";
-
-// Función para enviar el POST
-function sendPost(qrCode, result, timestamp) {
+// Función para enviar datos a Google Sheets
+function sendToGoogleSheets(qrCode, result, timestamp) {
     fetch(postUrl, {
         method: "POST",
         mode: "no-cors", // Permitir envío sin verificar la respuesta
@@ -51,7 +52,18 @@ function sendPost(qrCode, result, timestamp) {
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText) {
     const validationImage = document.getElementById("validation-image");
+    const currentTime = new Date().getTime();
     const timestamp = new Date().toISOString(); // Obtener el timestamp actual
+
+    // Evitar duplicados: Verificar si el código ya fue escaneado recientemente
+    if (decodedText === lastScannedCode && currentTime - lastScanTime < 5000) {
+        console.log("Código duplicado detectado. Ignorando.");
+        return;
+    }
+
+    // Actualizar el último código y la hora del escaneo
+    lastScannedCode = decodedText;
+    lastScanTime = currentTime;
 
     if (validCodes.includes(decodedText)) {
         // Mostrar imagen de acceso permitido
@@ -60,7 +72,7 @@ function onScanSuccess(decodedText) {
         document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Permitido`;
 
         // Enviar datos a Google Sheets
-        sendPost(decodedText, "Permitido", timestamp);
+        sendToGoogleSheets(decodedText, "Permitido", timestamp);
     } else {
         // Mostrar imagen de acceso denegado
         validationImage.src = "images/Denegado.png";
