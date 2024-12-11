@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elemento Arquitectura Interior</title>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,11 +13,13 @@
     <main>
         <div id="reader-container">
             <div id="reader"></div>
-            <img id="validation-image" src="" alt="Validación">
+            <div id="result">Cargando base de datos...</div>
+            <img id="validation-image" src="images/Estado" style="display: none;">
         </div>
-        <p id="result">Por favor, escanea un código QR...</p>
+        <button id="retry" style="display: none;" onclick="restartScanner()">Reintentar</button>
     </main>
     <footer>
+        <p id="last-modified"></p>
         <p>Elemento Arquitectura Interior © 2024</p>
     </footer>
     <script src="script.js"></script>
