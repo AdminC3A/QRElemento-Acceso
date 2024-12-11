@@ -1,58 +1,68 @@
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    color: #333333;
 }
 
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
+header, footer {
+    background-color: #333333;
+    color: #ffffff;
+    text-align: center;
+    width: 100%;
+    padding: 15px 0;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: 1px;
 }
 
 main {
-    margin: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    max-width: 600px;
+    width: 100%;
 }
 
 #reader-container {
-    margin: auto;
-    width: 300px;
+    position: relative;
+    width: 50%;
+    margin: 0 auto;
 }
 
 #reader {
     width: 100%;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-}
-
-#result {
-    font-size: 16px;
-    margin-top: 10px;
 }
 
 #validation-image {
-    width: 150px;
-    height: 150px;
-    margin: 10px auto;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 10;
 }
 
-button {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+#result {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1rem;
 }
 
-button:hover {
-    background-color: #0056b3;
-}
-
-footer {
-    margin-top: 20px;
-    font-size: 12px;
-    color: #666;
+footer p {
+    margin: 0;
+    font-size: 14px;
 }
