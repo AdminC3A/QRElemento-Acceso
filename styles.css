@@ -69,75 +69,56 @@ footer p {
 /* Contenedor del lector */
 #reader-container {
     position: relative;
-    width: 250px;
-    height: 250px;
+    width: 100%;
+    max-width: 300px; /* Ajustar al tamaño deseado */
+    height: 300px;
     margin: 0 auto;
+    overflow: hidden;
 }
 
 /* Lector */
 #reader {
     width: 100%;
     height: 100%;
+    position: relative;
+    z-index: 1;
 }
 
-/* Superposición oscura */
-#overlay {
+/* Superposición del marco */
+#frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%; /* Ajustar al tamaño deseado */
+    height: 80%;
+    transform: translate(-50%, -50%);
+    border: 4px solid transparent;
+    border-top: 4px solid green;
+    border-right: 4px solid green;
+    border-bottom: 4px solid green;
+    border-left: 4px solid green;
+    z-index: 2; /* Por encima del lector */
+    background: rgba(255, 255, 255, 0.5); /* Fondo blanco semitransparente */
+}
+
+/* Fondo oscuro alrededor del lector */
+#reader-container::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro */
-    z-index: 1;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 0; /* Fondo detrás del lector */
 }
 
-/* Marco verde */
-#frame {
-    position: absolute;
-    top: 25%;
-    left: 25%;
-    width: 50%;
-    height: 50%;
-    border: 3px solid transparent;
-    z-index: 2;
-    box-sizing: border-box;
-}
-
-/* Esquinas verdes */
-.corner {
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    background-color: transparent;
-    border: 3px solid green;
+/* Texto de resultados */
+#result {
+    position: relative;
+    text-align: center;
     z-index: 3;
-}
-
-/* Posición de las esquinas */
-.corner.top-left {
-    top: -3px;
-    left: -3px;
-    border-right: none;
-    border-bottom: none;
-}
-
-.corner.top-right {
-    top: -3px;
-    right: -3px;
-    border-left: none;
-    border-bottom: none;
-}
-
-.corner.bottom-left {
-    bottom: -3px;
-    left: -3px;
-    border-right: none;
-    border-top: none;
-}
-
-.corner.bottom-right {
-    bottom: -3px;
-    right: -3px;
-    border-left: none;
-    border-top: none;
+    color: #000; /* Color del texto */
+    font-size: 16px;
+    margin-top: 10px;
 }
