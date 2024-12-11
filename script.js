@@ -53,22 +53,18 @@ function onScanSuccess(decodedText) {
     const validationImage = document.getElementById("validation-image");
 
     if (validCodes.includes(decodedText)) {
-        // Mostrar la imagen de "Permitido"
-        validationImage.src = "images/Permitido.png";
-        validationImage.style.display = "block";
-        document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Permitido`;
+    validationImage.src = "images/Permitido.png";
+    validationImage.style.display = "block";
+    document.getElementById("result").innerText += " - Acceso Permitido";
 
-        // Después de un pequeño retraso, enviar los datos a Google Sheets
-        setTimeout(() => {
-            sendToGoogleSheets(decodedText, "Permitido");
-        }, 500); // Retraso de 500ms para asegurar que la imagen se muestre primero
-    } else {
-        // Mostrar la imagen de "Denegado"
-        validationImage.src = "images/Denegado.png";
-        validationImage.style.display = "block";
-        document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Denegado`;
-    }
-
+    // Llamar a la función para registrar el acceso en Google Sheets
+    const timestamp = new Date().toISOString(); // Obtener el timestamp actual
+    sendToGoogleSheets(decodedText, "Permitido", timestamp);
+} else {
+    validationImage.src = "images/Denegado.png";
+    validationImage.style.display = "block";
+    document.getElementById("result").innerText += " - Acceso Denegado";
+}
     // Ocultar la imagen después de 5 segundos
     setTimeout(() => {
         validationImage.style.display = "none";
