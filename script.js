@@ -1,37 +1,49 @@
-// Variable global para almacenar la última cámara seleccionada
+// Variables globales
 let lastCameraId = null;
+let database = [];
+const csvUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento/refs/heads/main/data/base_de_datos.csv";
 
-// URL de la base de datos CSV alojada en GitHub
-const csvUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento/refs/heads/main/data/base_de_datos.csv;
+// Función para cargar la base de datos desde GitHub
+async function loadDatabase() {
+    try {
+        const response = await fetch(csvUrl);
+        const csvText = await response.text();
 
-// Variable para almacenar la base de datos cargada
-let validCodes = [];
-
-// Cargar la base de datos desde el CSV
-function loadDatabase() {
-    return fetch(csvUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al cargar la base de datos.");
-            }
-            return response.text();
-        })
-        .then(csvText => {
-            const rows = csvText.split("\n").slice(1); // Saltar encabezados
-            validCodes = rows.map(row => {
-                const [CodigoQR] = row.split(",");
-                return CodigoQR.trim();
-            }).filter(code => code); // Filtrar valores vacíos
-
-            // Mostrar mensaje de confirmación de carga exitosa
-            const resultElement = document.getElementById("result");
-            resultElement.innerText = "Base de datos cargada correctamente.";
-            console.log("Base de datos cargada:", validCodes);
-        })
-        .catch(error => {
-            console.error("Error al cargar la base de datos:", error);
-            document.getElementById("result").innerText = "Error al cargar la base de datos.";
+        // Procesar el contenido del archivo CSV
+        const rows = csvText.split("\n").slice(1); // Saltar encabezados
+        database = rows.map(row => {
+            const [CodigoQR, Nombre, Empresa, Puesto] = row.split(",");
+            return {
+                CodigoQR: CodigoQR?.trim(),
+                Nombre: Nombre?.trim(),
+                Empresa: Empresa?.trim(),
+                Puesto: Puesto?.trim(),
+            };
         });
+
+        // Mostrar mensaje de éxito
+        console.log("Base de datos cargada:", database);
+        document.getElementById("result").innerText = "Base de datos cargada correctamente.";
+    } catch (error) {
+        console.error("Error al cargar la base de datos:", error);
+        document.getElementById("result").innerText = "Error al cargar la base de datos.";
+    }
+}
+
+// Función para obtener la última fecha de modificación del archivo CSV
+async function getLastModified() {
+    const repoUrl = "https://api.github.com/repos/AdminC3A/QRElemento/commits?path=data/base_de_datos.csv";
+
+    try {
+        const response = await fetch(repoUrl);
+        const commits = await response.json();
+        const lastCommit = commits[0];
+        const lastModified = new Date(lastCommit.commit.committer.date);
+
+        document.getElementById("last-modified").innerText = `Última modificación: ${lastModified.toLocaleString()}`;
+    } catch (error) {
+        console.error("Error al obtener la fecha de modificación:", error);
+    }
 }
 
 // Manejar el resultado exitoso del escaneo
@@ -40,14 +52,17 @@ function onScanSuccess(decodedText) {
 
     const validationImage = document.getElementById("validation-image");
 
-    if (validCodes.includes(decodedText)) {
+    // Validar el código QR escaneado
+    const match = database.find(entry => entry.CodigoQR === decodedText);
+
+    if (match) {
         validationImage.src = "images/Permitido.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText += " - Acceso Permitido";
+        document.getElementById("result").innerText = `Acceso permitido: ${match.Nombre}, ${match.Empresa}, ${match.Puesto}`;
     } else {
         validationImage.src = "images/Denegado.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText += " - Acceso Denegado";
+        document.getElementById("result").innerText = "Acceso denegado.";
     }
 
     setTimeout(() => {
@@ -108,7 +123,10 @@ function getBackCameraId() {
 }
 
 // Inicializar la aplicación
-loadDatabase().then(() => {
+(async function initApp() {
+    await loadDatabase(); // Cargar la base de datos
+    await getLastModified(); // Obtener la última fecha de modificación
+
     getBackCameraId()
         .then((cameraId) => {
             startScanner(cameraId);
@@ -118,4 +136,4 @@ loadDatabase().then(() => {
             document.getElementById("result").innerText =
                 "Error al acceder a la cámara. Verifica los permisos.";
         });
-});
+})();
