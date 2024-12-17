@@ -2,7 +2,7 @@
 let lastCameraId = null;
 
 // URL del Google Apps Script
-const postUrl = "https://script.google.com/macros/s/AKfycbwSSYR7qq4vHyvqPOV_ThS2cWSGfitklgGE1_cnJx4BnHq-Z8rL_NhaYJ9nQSLObOn8/exec";
+const postUrl = "https://script.google.com/a/macros/casatresaguas.com/s/AKfycbzgjs6ftgSlMhv3QGJcbuIWvFYYlB3DYiDUNXRufyoftDGrCYxCRZdMmg_faAnrKCRc/exec";
 
 // Variable para almacenar la base de datos cargada
 let validCodes = [];
