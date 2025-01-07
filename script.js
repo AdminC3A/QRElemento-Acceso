@@ -27,7 +27,7 @@ async function loadDatabase() {
     }
 }
 
-// Función para enviar datos a Google Sheets
+// Función para enviar datos de entradas a Google Sheets
 function sendToGoogleSheets(qrCode, result, timestamp) {
     fetch(postUrl, {
         method: "POST",
@@ -36,6 +36,7 @@ function sendToGoogleSheets(qrCode, result, timestamp) {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
+            operation: "entrada", // Operación específica para entradas
             qrCode: qrCode,
             result: result,
             timestamp: timestamp,
