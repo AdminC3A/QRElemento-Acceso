@@ -51,7 +51,14 @@ function sendToGoogleSheets(qrCode, result, timestamp) {
 }
 
 // Manejar el resultado exitoso del escaneo
+let isScanningPaused = false; // Bandera para pausar el escaneo
+
 function onScanSuccess(decodedText) {
+    if (isScanningPaused) {
+        console.log("Escaneo pausado. Esperando acción del usuario.");
+        return;
+    }
+
     const validationImage = document.getElementById("validation-image");
     const resultContainer = document.getElementById("result");
     const currentTime = new Date().getTime();
@@ -62,6 +69,9 @@ function onScanSuccess(decodedText) {
         console.log("Código duplicado detectado. Ignorando.");
         return;
     }
+
+    // Pausar el escaneo
+    isScanningPaused = true;
 
     // Actualizar el último código y la hora del escaneo
     lastScannedCode = decodedText;
@@ -84,8 +94,13 @@ function onScanSuccess(decodedText) {
         // Enviar datos a Google Sheets
         sendToGoogleSheets(decodedText, "Permitido", timestamp);
 
-        // Agregar evento para reiniciar el escáner al botón
-        document.getElementById("continueButton").addEventListener("click", restartScanner);
+        // Agregar evento para reanudar el escaneo
+        document.getElementById("continueButton").addEventListener("click", () => {
+            validationImage.style.display = "none"; // Ocultar la imagen
+            resultContainer.innerHTML = ""; // Limpiar el resultado
+            isScanningPaused = false; // Reanudar el escaneo
+            restartScanner(); // Reiniciar el escáner
+        });
     } else {
         // Mostrar imagen de acceso denegado
         validationImage.src = "images/Denegado.png";
@@ -96,10 +111,16 @@ function onScanSuccess(decodedText) {
             <button id="continueButton" style="font-size: 24px; padding: 20px 40px; margin-top: 10px;">Denegado > Reintentar</button>
         `;
 
-        // Agregar evento para reiniciar el escáner al botón
-        document.getElementById("continueButton").addEventListener("click", restartScanner);
+        // Agregar evento para reanudar el escaneo
+        document.getElementById("continueButton").addEventListener("click", () => {
+            validationImage.style.display = "none"; // Ocultar la imagen
+            resultContainer.innerHTML = ""; // Limpiar el resultado
+            isScanningPaused = false; // Reanudar el escaneo
+            restartScanner(); // Reiniciar el escáner
+        });
     }
 }
+
 
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
