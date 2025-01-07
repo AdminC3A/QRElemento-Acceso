@@ -53,6 +53,7 @@ function sendToGoogleSheets(qrCode, result, timestamp) {
 // Manejar el resultado exitoso del escaneo
 function onScanSuccess(decodedText) {
     const validationImage = document.getElementById("validation-image");
+    const resultContainer = document.getElementById("result");
     const currentTime = new Date().getTime();
     const timestamp = new Date().toISOString(); // Obtener el timestamp actual
 
@@ -66,12 +67,15 @@ function onScanSuccess(decodedText) {
     lastScannedCode = decodedText;
     lastScanTime = currentTime;
 
-    const resultContainer = document.getElementById("result");
+    // Normalizar valores para evitar problemas de formato
+    const normalizedText = decodedText.trim();
+    const normalizedValidCodes = validCodes.map(code => code.trim());
 
-    if (validCodes.includes(decodedText)) {
+    if (normalizedValidCodes.includes(normalizedText)) {
         // Mostrar imagen de acceso permitido
         validationImage.src = "images/Permitido.png";
         validationImage.style.display = "block";
+
         resultContainer.innerHTML = `
             Código detectado: ${decodedText} - Acceso Permitido<br>
             <button id="continueButton" style="font-size: 24px; padding: 20px 40px; margin-top: 10px;">Registrado > Seguir</button>
@@ -80,22 +84,22 @@ function onScanSuccess(decodedText) {
         // Enviar datos a Google Sheets
         sendToGoogleSheets(decodedText, "Permitido", timestamp);
 
-        // Agregar evento al botón "Registrado > Seguir"
+        // Agregar evento para reiniciar el escáner al botón
         document.getElementById("continueButton").addEventListener("click", restartScanner);
     } else {
         // Mostrar imagen de acceso denegado
         validationImage.src = "images/Denegado.png";
         validationImage.style.display = "block";
+
         resultContainer.innerHTML = `
             Código detectado: ${decodedText} - Acceso Denegado<br>
             <button id="continueButton" style="font-size: 24px; padding: 20px 40px; margin-top: 10px;">Denegado > Reintentar</button>
         `;
 
-        // Agregar evento al botón "Denegado > Reintentar"
+        // Agregar evento para reiniciar el escáner al botón
         document.getElementById("continueButton").addEventListener("click", restartScanner);
     }
 }
-
 
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
