@@ -111,7 +111,7 @@ function onScanSuccess(decodedText) {
         validationImage.style.display = "block";
 
         resultContainer.innerHTML = `
-            Código detectado: ${decodedText} - Acceso Denegado. Reintentando en 11 segundos...
+            Código detectado: ${decodedText} - Acceso Denegado. Quitar de la fila...
         `;
 
         // Esperar 11 segundos antes de reanudar el escaneo
@@ -124,7 +124,7 @@ function onScanSuccess(decodedText) {
             resultContainer.innerHTML = ""; // Limpiar el resultado
             isScanningPaused = false; // Reanudar el escaneo
             restartScanner(); // Reiniciar el escáner
-        }, 11000);
+        }, 5000);
     }
 }
 
