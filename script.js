@@ -66,25 +66,34 @@ function onScanSuccess(decodedText) {
     lastScannedCode = decodedText;
     lastScanTime = currentTime;
 
+    const resultContainer = document.getElementById("result");
+
     if (validCodes.includes(decodedText)) {
         // Mostrar imagen de acceso permitido
         validationImage.src = "images/Permitido.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Permitido`;
+        resultContainer.innerHTML = `
+            Código detectado: ${decodedText} - Acceso Permitido<br>
+            <button id="continueButton">Registrado > Seguir</button>
+        `;
 
         // Enviar datos a Google Sheets
         sendToGoogleSheets(decodedText, "Permitido", timestamp);
+
+        // Agregar evento al botón "Registrado > Seguir"
+        document.getElementById("continueButton").addEventListener("click", restartScanner);
     } else {
         // Mostrar imagen de acceso denegado
         validationImage.src = "images/Denegado.png";
         validationImage.style.display = "block";
-        document.getElementById("result").innerText = `Código detectado: ${decodedText} - Acceso Denegado`;
-    }
+        resultContainer.innerHTML = `
+            Código detectado: ${decodedText} - Acceso Denegado<br>
+            <button id="continueButton">Denegado > Reintentar</button>
+        `;
 
-    // Ocultar la imagen después de 5 segundos
-    setTimeout(() => {
-        validationImage.style.display = "none";
-    }, 5000);
+        // Agregar evento al botón "Denegado > Reintentar"
+        document.getElementById("continueButton").addEventListener("click", restartScanner);
+    }
 }
 
 // Manejar errores durante el escaneo
