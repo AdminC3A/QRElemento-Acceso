@@ -74,7 +74,7 @@ function onScanSuccess(decodedText) {
         validationImage.style.display = "block";
         resultContainer.innerHTML = `
             Código detectado: ${decodedText} - Acceso Permitido<br>
-            <button id="continueButton">Registrado > Seguir</button>
+            <button id="continueButton" style="font-size: 24px; padding: 20px 40px; margin-top: 10px;">Registrado > Seguir</button>
         `;
 
         // Enviar datos a Google Sheets
@@ -88,13 +88,14 @@ function onScanSuccess(decodedText) {
         validationImage.style.display = "block";
         resultContainer.innerHTML = `
             Código detectado: ${decodedText} - Acceso Denegado<br>
-            <button id="continueButton">Denegado > Reintentar</button>
+            <button id="continueButton" style="font-size: 24px; padding: 20px 40px; margin-top: 10px;">Denegado > Reintentar</button>
         `;
 
         // Agregar evento al botón "Denegado > Reintentar"
         document.getElementById("continueButton").addEventListener("click", restartScanner);
     }
 }
+
 
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
