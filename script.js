@@ -70,12 +70,12 @@ function onScanSuccess(decodedText) {
         return;
     }
 
+    // Pausar el escaneo
+    isScanningPaused = true;
+
     // Actualizar el último código y la hora del escaneo
     lastScannedCode = decodedText;
     lastScanTime = currentTime;
-
-    // Pausar el escaneo
-    isScanningPaused = true;
 
     // Normalizar valores para evitar problemas de formato
     const normalizedText = decodedText.trim();
@@ -96,6 +96,10 @@ function onScanSuccess(decodedText) {
 
         // Agregar evento para reanudar el escaneo
         document.getElementById("continueButton").addEventListener("click", () => {
+            // Limpiar variables del último escaneo
+            lastScannedCode = null;
+            lastScanTime = 0;
+
             validationImage.style.display = "none"; // Ocultar la imagen
             resultContainer.innerHTML = ""; // Limpiar el resultado
             isScanningPaused = false; // Reanudar el escaneo
@@ -107,16 +111,20 @@ function onScanSuccess(decodedText) {
         validationImage.style.display = "block";
 
         resultContainer.innerHTML = `
-            Código detectado: ${decodedText} - Acceso Denegado. Quitar de la fila...
+            Código detectado: ${decodedText} - Acceso Denegado. Reintentando en 11 segundos...
         `;
 
         // Esperar 11 segundos antes de reanudar el escaneo
         setTimeout(() => {
+            // Limpiar variables del último escaneo
+            lastScannedCode = null;
+            lastScanTime = 0;
+
             validationImage.style.display = "none"; // Ocultar la imagen
             resultContainer.innerHTML = ""; // Limpiar el resultado
             isScanningPaused = false; // Reanudar el escaneo
             restartScanner(); // Reiniciar el escáner
-        }, 5000);
+        }, 11000);
     }
 }
 
