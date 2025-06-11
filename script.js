@@ -29,6 +29,12 @@ async function loadDatabase() {
 
 // Función para enviar datos de entradas a Google Sheets
 function sendToGoogleSheets(qrCode, result, timestamp) {
+    console.log("Enviando a Google Sheets:", {
+        operation: "entrada",
+        qrCode: qrCode,
+        result: result,
+        timestamp: timestamp
+    });
     fetch(postUrl, {
         method: "POST",
         mode: "no-cors", // Permitir envío sin verificar la respuesta
