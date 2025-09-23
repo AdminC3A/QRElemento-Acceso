@@ -193,7 +193,3 @@ loadDatabase().then(() => {
                 "Error al acceder a la cámara. Verifica los permisos.";
         });
 });
-
-
-
-
