@@ -1,13 +1,17 @@
-{
-    "personalInterno": { // <--- rolKey
-        "rol": "Interno", 
-        "supervisores": {
-            "Laura Lopez": ["Lista2525"],
-            "David Martinez": ["Admin25"]
-        }
+[
+    {
+        "code": "Lista2525",
+        "rol": "Supervisor de seguridad",
+        "nombre": "Laura Lopez"
     },
-    "personalExterno": {
+    {
+        "code": "Admin25",
+        "rol": "Interno",
+        "nombre": "Ing. David Martinez"
+    },
+    {
+        "code": "VISITA-001",
         "rol": "Externo",
-        // ... (no necesita supervisores si no se valida)
+        "nombre": "Proveedor A"
     }
-}
+]
