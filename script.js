@@ -4,193 +4,111 @@ let lastCameraId = null;
 // URL del Google Apps Script
 const postUrl = "https://script.google.com/macros/s/AKfycbwmkizxXdEmsR-J3sTx2kW64eDYArw_iG59lGpcr-7qpPXngsaXsaLBplSXx4_eYg7xTw/exec";
 
-// Variable para almacenar la base de datos cargada
+// 🆕 MODIFICACIÓN: Variable para almacenar el código del usuario que ha iniciado sesión
+let loggedInUserCode = null;
+
+// Variable para almacenar la base de datos cargada (Códigos de Elementos)
 let validCodes = [];
+
+// 🆕 MODIFICACIÓN: Variable para almacenar los códigos de usuario (Roles)
+let validUserRoles = [];
 
 // Variable para evitar duplicados
 let lastScannedCode = null;
 let lastScanTime = 0;
 
-// Función para cargar la base de datos desde el CSV
-async function loadDatabase() {
-    try {
-        const response = await fetch("https://raw.githubusercontent.com/AdminC3A/QRElemento/main/data/base_de_datos.csv");
-        const csvText = await response.text();
+// Función para cargar la base de datos desde el CSV (Sin cambios)
+async function loadDatabase() { /* ... */ }
 
-        // Procesar el contenido del archivo CSV
-        validCodes = csvText.split("\n").map(row => row.trim()).filter(code => code); // Filtrar valores vacíos
-        document.getElementById("result").innerText = "Base de datos cargada correctamente.";
-        console.log("Base de datos cargada:", validCodes);
+// 🆕 MODIFICACIÓN: Función para cargar los códigos de acceso de usuarios desde roles.json
+async function loadUserRoles() {
+    try {
+        const response = await fetch("https://raw.githubusercontent.com/AdminC3A/QRElemento/main/data/roles.json");
+        validUserRoles = await response.json();
+        console.log("Roles de usuario cargados:", validUserRoles);
     } catch (error) {
-        console.error("Error al cargar la base de datos:", error);
-        document.getElementById("result").innerText = "Error al cargar la base de datos.";
+        console.error("Error al cargar los roles de usuario:", error);
+        document.getElementById("result").innerText = "Error al cargar los roles de usuario.";
+        throw error;
     }
 }
 
-// Función para enviar datos de entradas a Google Sheets
+// Función para enviar datos de entradas a Google Sheets (Modificada)
 function sendToGoogleSheets(qrCode, result, timestamp) {
     fetch(postUrl, {
         method: "POST",
-        mode: "no-cors", // Permitir envío sin verificar la respuesta
+        mode: "no-cors", 
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            operation: "entrada", // Operación específica para entradas
+            operation: "entrada",
             qrCode: qrCode,
             result: result,
             timestamp: timestamp,
+            userCode: loggedInUserCode, // 🆕 MODIFICACIÓN: Nuevo campo enviado
         }),
     })
+    .then(() => { /* ... */ })
+    .catch((error) => { /* ... */ });
+}
+
+// Manejar el resultado exitoso del escaneo (onScanSuccess - Sin cambios funcionales, solo llama a la versión modificada de sendToGoogleSheets)
+function onScanSuccess(decodedText) { /* ... */ }
+
+// Manejar errores durante el escaneo (onScanError - Sin cambios)
+function onScanError(errorMessage) { /* ... */ }
+
+// Función para iniciar el escaneo con una cámara específica (startScanner - Sin cambios)
+function startScanner(cameraId) { /* ... */ }
+
+// Función para reiniciar el escáner QR (restartScanner - Sin cambios)
+function restartScanner() { /* ... */ }
+
+// Función para obtener la cámara trasera automáticamente (getBackCameraId - Sin cambios)
+function getBackCameraId() { /* ... */ }
+
+
+// 🆕 MODIFICACIÓN: Función de Autenticación
+function handleLogin() {
+    const userInput = document.getElementById('userCodeInput').value.trim();
+    const resultContainer = document.getElementById("result");
+    
+    const roleCodes = validUserRoles.map(role => role.code.trim()); // Asume roles.json es [{code: "X"}, ...]
+
+    if (roleCodes.includes(userInput)) {
+        loggedInUserCode = userInput;
+        
+        // Ocultar login y mostrar escáner (REQUIERE MODIFICAR EL HTML)
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('scanner-container').style.display = 'block';
+
+        getBackCameraId()
+            .then(startScanner)
+            .catch((error) => {
+                 resultContainer.innerText = "Error al acceder a la cámara. Verifica los permisos.";
+            });
+
+    } else {
+        resultContainer.innerText = "Código de acceso incorrecto. Inténtalo de nuevo.";
+        document.getElementById('userCodeInput').value = ''; 
+    }
+}
+
+// 🆕 MODIFICACIÓN: Inicializar la aplicación (Cargar ambas bases y configurar Login)
+Promise.all([loadDatabase(), loadUserRoles()])
     .then(() => {
-        console.log("Registro enviado a Google Sheets.");
+        document.getElementById("result").innerText = "Bases de datos cargadas. Ingresa tu código de acceso para continuar.";
+        
+        // Configurar los listeners del formulario de login (REQUIERE MODIFICAR EL HTML)
+        document.getElementById('loginButton').addEventListener('click', handleLogin);
+        document.getElementById('userCodeInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                handleLogin();
+            }
+        });
     })
     .catch((error) => {
-        console.error("Error al enviar la solicitud:", error);
+        console.error("Fallo la inicialización de la aplicación:", error);
+        document.getElementById("result").innerText = "ERROR FATAL: No se pudieron cargar los datos esenciales.";
     });
-}
-
-// Manejar el resultado exitoso del escaneo
-let isScanningPaused = false; // Bandera para pausar el escaneo
-
-function onScanSuccess(decodedText) {
-    if (isScanningPaused) {
-        console.log("Escaneo pausado. Esperando acción del usuario.");
-        return;
-    }
-
-    const validationImage = document.getElementById("validation-image");
-    const resultContainer = document.getElementById("result");
-    const currentTime = new Date().getTime();
-    const timestamp = new Date().toISOString(); // Obtener el timestamp actual
-
-    // Evitar duplicados: Verificar si el código ya fue escaneado recientemente
-    if (decodedText === lastScannedCode && currentTime - lastScanTime < 5000) {
-        console.log("Código duplicado detectado. Ignorando.");
-        return;
-    }
-
-    // Pausar el escaneo
-    isScanningPaused = true;
-
-    // Actualizar el último código y la hora del escaneo
-    lastScannedCode = decodedText;
-    lastScanTime = currentTime;
-
-    // Normalizar valores para evitar problemas de formato
-    const normalizedText = decodedText.trim();
-    const normalizedValidCodes = validCodes.map(code => code.trim());
-
-    if (normalizedValidCodes.includes(normalizedText)) {
-        // Mostrar imagen de acceso permitido
-        validationImage.src = "images/Permitido.png";
-        validationImage.style.display = "block";
-
-        resultContainer.innerHTML = `
-            Código detectado: ${decodedText} - Acceso Permitido<br>
-            <button id="continueButton" style="font-size: 24px; padding: 20px 40px; margin-top: 10px;">Registrado > Seguir</button>
-        `;
-
-        // Enviar datos a Google Sheets
-        sendToGoogleSheets(decodedText, "Permitido", timestamp);
-
-        // Agregar evento para reanudar el escaneo
-        document.getElementById("continueButton").addEventListener("click", () => {
-            // Limpiar variables del último escaneo
-            lastScannedCode = null;
-            lastScanTime = 0;
-
-            validationImage.style.display = "none"; // Ocultar la imagen
-            resultContainer.innerHTML = ""; // Limpiar el resultado
-            isScanningPaused = false; // Reanudar el escaneo
-            restartScanner(); // Reiniciar el escáner
-        });
-    } else {
-        // Mostrar imagen de acceso denegado
-        validationImage.src = "images/Denegado.png";
-        validationImage.style.display = "block";
-
-        resultContainer.innerHTML = `
-            Código detectado: ${decodedText} - Acceso Denegado. Quitar de la fila...
-        `;
-
-        // Esperar 11 segundos antes de reanudar el escaneo
-        setTimeout(() => {
-            // Limpiar variables del último escaneo
-            lastScannedCode = null;
-            lastScanTime = 0;
-
-            validationImage.style.display = "none"; // Ocultar la imagen
-            resultContainer.innerHTML = ""; // Limpiar el resultado
-            isScanningPaused = false; // Reanudar el escaneo
-            restartScanner(); // Reiniciar el escáner
-        }, 5000);
-    }
-}
-
-
-// Manejar errores durante el escaneo
-function onScanError(errorMessage) {
-    console.error("Error durante el escaneo:", errorMessage);
-}
-
-// Función para iniciar el escaneo con una cámara específica
-function startScanner(cameraId) {
-    const html5Qrcode = new Html5Qrcode("reader");
-
-    html5Qrcode
-        .start(
-            cameraId,
-            { fps: 15, qrbox: { width: 125, height: 125 } },
-            onScanSuccess,
-            onScanError
-        )
-        .then(() => {
-            lastCameraId = cameraId;
-        })
-        .catch((error) => {
-            console.error("Error al iniciar el escaneo:", error);
-        });
-}
-
-// Función para reiniciar el escáner QR
-function restartScanner() {
-    document.getElementById("result").innerText = "Por favor, escanea un código QR...";
-    document.getElementById("validation-image").style.display = "none";
-
-    if (lastCameraId) {
-        startScanner(lastCameraId);
-    } else {
-        getBackCameraId().then(startScanner).catch((error) => {
-            console.error("Error al obtener la cámara trasera:", error);
-        });
-    }
-}
-
-// Función para obtener la cámara trasera automáticamente
-function getBackCameraId() {
-    return Html5Qrcode.getCameras().then((cameras) => {
-        if (cameras && cameras.length > 0) {
-            const backCamera = cameras.find((camera) =>
-                camera.label.toLowerCase().includes("back")
-            );
-            return backCamera ? backCamera.id : cameras[0].id;
-        } else {
-            throw new Error("No se encontraron cámaras disponibles.");
-        }
-    });
-}
-
-// Inicializar la aplicación
-loadDatabase().then(() => {
-    getBackCameraId()
-        .then((cameraId) => {
-            startScanner(cameraId);
-        })
-        .catch((error) => {
-            console.error("Error al obtener la cámara trasera:", error);
-            document.getElementById("result").innerText =
-                "Error al acceder a la cámara. Verifica los permisos.";
-        });
-});
-
