@@ -1,0 +1,13 @@
+{
+    "personalInterno": { // <--- rolKey
+        "rol": "Interno", 
+        "supervisores": {
+            "Laura Lopez": ["Lista2525"],
+            "David Martinez": ["Admin25"]
+        }
+    },
+    "personalExterno": {
+        "rol": "Externo",
+        // ... (no necesita supervisores si no se valida)
+    }
+}
