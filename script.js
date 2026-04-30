@@ -1,3 +1,60 @@
+// ── NUEVO: Variables del portador (se llenan al hacer login) ──
+let currentUser = {
+    code: null,
+    rol: null,
+    nombre: null
+};
+
+const rolesUrl = "https://raw.githubusercontent.com/AdminC3A/QRElemento-Acceso/main/data/roles.json";
+
+async function loadRolesAndLogin() {
+    const inputCode = document.getElementById("access-code-input").value.trim();
+    const errorMsg  = document.getElementById("login-error");
+
+    if (!inputCode) { errorMsg.innerText = "Por favor ingresa tu código."; return; }
+
+    try {
+        const response = await fetch(rolesUrl);
+        const roles    = await response.json();
+        const match    = roles.find(r => r.code === inputCode);
+
+        if (match) {
+            currentUser.code   = match.code;
+            currentUser.rol    = match.rol;
+            currentUser.nombre = match.nombre;
+
+            document.getElementById("user-info").innerText =
+                `👤 ${currentUser.nombre} — ${currentUser.rol}`;
+
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("main-screen").style.display  = "block";
+
+            // Arrancar la app original
+            loadDatabase().then(() => {
+                getBackCameraId()
+                    .then((cameraId) => { startScanner(cameraId); })
+                    .catch((error) => {
+                        console.error("Error al obtener la cámara trasera:", error);
+                        document.getElementById("result").innerText =
+                            "Error al acceder a la cámara. Verifica los permisos.";
+                    });
+            });
+        } else {
+            errorMsg.innerText = "❌ Código incorrecto. Intenta de nuevo.";
+        }
+    } catch (error) {
+        console.error("Error al cargar roles:", error);
+        errorMsg.innerText = "Error al conectar con el servidor.";
+    }
+}
+
+document.getElementById("login-button").addEventListener("click", loadRolesAndLogin);
+document.getElementById("access-code-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loadRolesAndLogin();
+});
+// ── FIN NUEVO ──────────────────────────────────────────────────
+
+
 // Variable global para almacenar la última cámara seleccionada
 let lastCameraId = null;
 
@@ -31,15 +88,19 @@ async function loadDatabase() {
 function sendToGoogleSheets(qrCode, result, timestamp) {
     fetch(postUrl, {
         method: "POST",
-        mode: "no-cors", // Permitir envío sin verificar la respuesta
+        mode: "no-cors",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            operation: "entrada", // Operación específica para entradas
+            operation: "entrada",
             qrCode: qrCode,
             result: result,
             timestamp: timestamp,
+            // ── NUEVO: datos del portador ──
+            portadorCodigo: currentUser.code,
+            portadorNombre: currentUser.nombre,
+            portadorRol:    currentUser.rol
         }),
     })
     .then(() => {
@@ -114,7 +175,7 @@ function onScanSuccess(decodedText) {
             Código detectado: ${decodedText} - Acceso Denegado. Quitar de la fila...
         `;
 
-        // Esperar 11 segundos antes de reanudar el escaneo
+        // Esperar 5 segundos antes de reanudar el escaneo
         setTimeout(() => {
             // Limpiar variables del último escaneo
             lastScannedCode = null;
@@ -127,7 +188,6 @@ function onScanSuccess(decodedText) {
         }, 5000);
     }
 }
-
 
 // Manejar errores durante el escaneo
 function onScanError(errorMessage) {
@@ -181,17 +241,4 @@ function getBackCameraId() {
     });
 }
 
-// Inicializar la aplicación
-loadDatabase().then(() => {
-    getBackCameraId()
-        .then((cameraId) => {
-            startScanner(cameraId);
-        })
-        .catch((error) => {
-            console.error("Error al obtener la cámara trasera:", error);
-            document.getElementById("result").innerText =
-                "Error al acceder a la cámara. Verifica los permisos.";
-        });
-});
-
-
+// NOTA: El arranque original loadDatabase().then(...) fue movido al login exitoso

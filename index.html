@@ -8,19 +8,36 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Registro de ENTRADA a obra</h1>
-    </header>
-    <main>
-        <div id="reader-container">
-            <div id="reader"></div>
-            <img id="validation-image" src="" alt="Validación">
+
+    <!-- LOGIN: se oculta tras autenticación exitosa -->
+    <div id="login-screen">
+        <div id="login-box">
+            <h2>Acceso al Sistema</h2>
+            <p>Ingresa tu código de acceso</p>
+            <input type="password" id="access-code-input" placeholder="Código de acceso" maxlength="20" />
+            <button id="login-button">Entrar</button>
+            <p id="login-error"></p>
         </div>
-        <p id="result">Por favor, escanea un código QR...</p>
-    </main>
-    <footer>
-        <p>Elemento Arquitectura Interior © 2025</p>
-    </footer>
+    </div>
+
+    <!-- CONTENIDO ORIGINAL intacto, oculto hasta login -->
+    <div id="main-screen" style="display:none; width:100%;">
+        <header>
+            <h1>Registro de ENTRADA a obra</h1>
+            <div id="user-info"></div>
+        </header>
+        <main>
+            <div id="reader-container">
+                <div id="reader"></div>
+                <img id="validation-image" src="" alt="Validación">
+            </div>
+            <p id="result">Por favor, escanea un código QR...</p>
+        </main>
+        <footer>
+            <p>Elemento Arquitectura Interior © 2025</p>
+        </footer>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
