@@ -1,8 +1,8 @@
 [
     {
-        "code": "Lista2525",
+        "code": "12098",
         "rol": "Supervisor de seguridad",
-        "nombre": "Laura Lopez"
+        "nombre": "Laura Cruz Aviles"
     },
     {
         "code": "Admin2605",
@@ -10,8 +10,8 @@
         "nombre": "Ing. David Martinez"
     },
     {
-        "code": "VISITA-001",
-        "rol": "Externo",
-        "nombre": "Proveedor A"
+        "code": "PerlaRH",
+        "rol": "Gerenta de RH",
+        "nombre": "Perla Armenta"
     }
 ]
