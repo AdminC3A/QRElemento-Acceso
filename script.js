@@ -59,7 +59,7 @@ document.getElementById("access-code-input").addEventListener("keydown", (e) => 
 let lastCameraId = null;
 
 // URL del Google Apps Script
-const postUrl = "https://script.google.com/macros/s/AKfycbxlNAlEWuR7dCjEROs1Ul3FdlLWR_CNWu33SX65ITJh-WdPb2wz6-1qbmP1g14MyWc9/exec";
+const postUrl = "https://script.google.com/macros/s/AKfycbzT9HZ-Ea-7ZD-VDdbbM7HsbezsXp0w_XaTQlP9iovbx7c1GIYjkpcl_5nc-RGktf5M/exec";
 
 // Variable para almacenar la base de datos cargada
 let validCodes = [];
