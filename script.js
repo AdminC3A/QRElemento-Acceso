@@ -71,19 +71,17 @@ let lastScanTime = 0;
 // Función para cargar la base de datos desde el CSV
 async function loadDatabase() {
     try {
-        const response = await fetch("https://raw.githubusercontent.com/AdminC3A/QRElemento/main/data/base_de_datos.csv");
-        const csvText = await response.text();
+        const response = await fetch(postUrl + "?t=" + Date.now());
+        const codes = await response.json();
 
-        // Procesar el contenido del archivo CSV
-        validCodes = csvText.split("\n").map(row => row.trim()).filter(code => code); // Filtrar valores vacíos
+        validCodes = codes.map(c => String(c).trim()).filter(c => c);
         document.getElementById("result").innerText = "Base de datos cargada correctamente.";
-        console.log("Base de datos cargada:", validCodes);
+        console.log("Códigos autorizados cargados:", validCodes.length);
     } catch (error) {
         console.error("Error al cargar la base de datos:", error);
         document.getElementById("result").innerText = "Error al cargar la base de datos.";
     }
 }
-
 // Función para enviar datos de entradas a Google Sheets
 function sendToGoogleSheets(qrCode, result, timestamp) {
     fetch(postUrl, {
